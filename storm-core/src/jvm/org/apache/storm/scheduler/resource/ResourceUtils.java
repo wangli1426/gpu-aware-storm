@@ -68,6 +68,7 @@ public class ResourceUtils {
     public static void checkIntialization(Map<String, Double> topology_resources, String Com, Map topologyConf) {
         checkInitMem(topology_resources, Com, topologyConf);
         checkInitCPU(topology_resources, Com, topologyConf);
+        checkInitGPU(topology_resources, Com, topologyConf);
     }
 
     public static void checkInitMem(Map<String, Double> topology_resources, String Com, Map topologyConf) {
@@ -88,6 +89,14 @@ public class ResourceUtils {
             topology_resources.put(Config.TOPOLOGY_COMPONENT_CPU_PCORE_PERCENT,
                     org.apache.storm.utils.Utils.getDouble(topologyConf.get(Config.TOPOLOGY_COMPONENT_CPU_PCORE_PERCENT), null));
             debugMessage("CPU", Com, topologyConf);
+        }
+    }
+
+    public static void checkInitGPU(Map<String, Double> topology_resources, String Com, Map topologyConf) {
+        if (!topology_resources.containsKey(Config.TOPOLOGY_COMPONENT_GPU_PERCENT)) {
+            topology_resources.put(Config.TOPOLOGY_COMPONENT_GPU_PERCENT,
+                    org.apache.storm.utils.Utils.getDouble(topologyConf.get(Config.TOPOLOGY_COMPONENT_GPU_PERCENT), null));
+            debugMessage("GPU", Com, topologyConf);
         }
     }
 
@@ -112,6 +121,10 @@ public class ResourceUtils {
                 if (jsonObject.containsKey(Config.TOPOLOGY_COMPONENT_CPU_PCORE_PERCENT)) {
                     Double topoCPU = org.apache.storm.utils.Utils.getDouble(jsonObject.get(Config.TOPOLOGY_COMPONENT_CPU_PCORE_PERCENT), null);
                     topology_resources.put(Config.TOPOLOGY_COMPONENT_CPU_PCORE_PERCENT, topoCPU);
+                }
+                if (jsonObject.containsKey(Config.TOPOLOGY_COMPONENT_GPU_PERCENT)) {
+                    Double topoGPU = org.apache.storm.utils.Utils.getDouble(jsonObject.get(Config.TOPOLOGY_COMPONENT_GPU_PERCENT), null);
+                    topology_resources.put(Config.TOPOLOGY_COMPONENT_GPU_PERCENT, topoGPU);
                 }
                 LOG.debug("Topology Resources {}", topology_resources);
             }

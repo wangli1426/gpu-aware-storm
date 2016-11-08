@@ -26,17 +26,20 @@ public class WorkerSlot {
     private double memOffHeap = 0.0;
     // amount of cpu allocated to it
     private double cpu = 0.0;
+    // amount of gpu allocated to it
+    private double gpu = 0.0;
     
     public WorkerSlot(String nodeId, Number port) {
-        this(nodeId, port, 0.0, 0.0, 0.0);
+        this(nodeId, port, 0.0, 0.0, 0.0, 0.0);
     }
 
-    public WorkerSlot(String nodeId, Number port, double memOnHeap, double memOffHeap, double cpu) {
+    public WorkerSlot(String nodeId, Number port, double memOnHeap, double memOffHeap, double cpu, double gpu) {
         this.nodeId = nodeId;
         this.port = port.intValue();
         this.memOnHeap = memOnHeap;
         this.memOffHeap = memOffHeap;
         this.cpu = cpu;
+        this.gpu = gpu;
     }
     
     public String getNodeId() {
@@ -61,6 +64,10 @@ public class WorkerSlot {
 
     public double getAllocatedCpu() {
         return cpu;
+    }
+
+    public double getAllocatedGpu() {
+        return gpu;
     }
 
     @Override

@@ -70,8 +70,9 @@ public class ResourceAwareExampleTopology {
     //For requirements not set, a default value will be used
     bolt1.setCPULoad(15);
 
-    BoltDeclarer bolt2 = builder.setBolt("exclaim2", new ExclamationBolt(), 2).shuffleGrouping("exclaim1");
+    BoltDeclarer bolt2 = builder.setBolt("exclaim2", new ExclamationBolt(), 1).shuffleGrouping("exclaim1");
     bolt2.setMemoryLoad(100);
+    bolt2.setGPULoad(60);
 
     Config conf = new Config();
     conf.setDebug(true);

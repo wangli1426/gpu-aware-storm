@@ -147,6 +147,15 @@ public class Stream implements IAggregatableStream, ResourceDeclarer<Stream> {
     }
 
     /**
+     * Sets the GPU Load resource for the current operation
+     */
+    @Override
+    public Stream setGPULoad(Number load) {
+        _node.setGPULoad(load);
+        return this;
+    }
+
+    /**
      * Sets the Memory Load resources for the current operation.
      * offHeap becomes default
      */

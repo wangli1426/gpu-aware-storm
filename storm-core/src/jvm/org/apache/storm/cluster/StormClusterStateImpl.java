@@ -586,6 +586,7 @@ public class StormClusterStateImpl implements IStormClusterState {
 
     @Override
     public void setAssignment(String stormId, Assignment info) {
+        LOG.info("setAssignment: {}", info);
         stateStorage.set_data(ClusterUtils.assignmentPath(stormId), Utils.serialize(info), acls);
     }
 

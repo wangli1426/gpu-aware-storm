@@ -455,6 +455,7 @@ public class TridentTopology {
             Number onHeap = spoutRes.get(Config.TOPOLOGY_COMPONENT_RESOURCES_ONHEAP_MEMORY_MB);
             Number offHeap = spoutRes.get(Config.TOPOLOGY_COMPONENT_RESOURCES_OFFHEAP_MEMORY_MB);
             Number cpuLoad = spoutRes.get(Config.TOPOLOGY_COMPONENT_CPU_PCORE_PERCENT);
+            Number gpuLoad = spoutRes.get(Config.TOPOLOGY_COMPONENT_GPU_PERCENT);
 
             SpoutDeclarer spoutDeclarer = null;
 
@@ -487,6 +488,10 @@ public class TridentTopology {
             if(cpuLoad != null) {
                 spoutDeclarer.setCPULoad(cpuLoad);
             }
+
+            if(gpuLoad != null) {
+                spoutDeclarer.setGPULoad(gpuLoad);
+            }
         }
 
         for(Group g: mergedGroups) {
@@ -498,6 +503,7 @@ public class TridentTopology {
                 Number onHeap = groupRes.get(Config.TOPOLOGY_COMPONENT_RESOURCES_ONHEAP_MEMORY_MB);
                 Number offHeap = groupRes.get(Config.TOPOLOGY_COMPONENT_RESOURCES_OFFHEAP_MEMORY_MB);
                 Number cpuLoad = groupRes.get(Config.TOPOLOGY_COMPONENT_CPU_PCORE_PERCENT);
+                Number gpuLoad = groupRes.get(Config.TOPOLOGY_COMPONENT_GPU_PERCENT);
 
                 BoltDeclarer d = builder.setBolt(boltIds.get(g), new SubtopologyBolt(graph, g.nodes, batchGroupMap), p,
                                                  committerBatches(g, batchGroupMap), streamToGroup);
@@ -513,6 +519,10 @@ public class TridentTopology {
 
                 if(cpuLoad != null) {
                     d.setCPULoad(cpuLoad);
+                }
+
+                if(gpuLoad != null) {
+                    d.setGPULoad(gpuLoad);
                 }
 
                 Collection<PartitionNode> inputs = uniquedSubscriptions(externalGroupInputs(g));
@@ -535,17 +545,20 @@ public class TridentTopology {
         Number onHeapDefault = (Number)defaultConfig.get(Config.TOPOLOGY_COMPONENT_RESOURCES_ONHEAP_MEMORY_MB);
         Number offHeapDefault = (Number)defaultConfig.get(Config.TOPOLOGY_COMPONENT_RESOURCES_OFFHEAP_MEMORY_MB);
         Number cpuLoadDefault = (Number)defaultConfig.get(Config.TOPOLOGY_COMPONENT_CPU_PCORE_PERCENT);
+        Number gpuLoadDefualt = (Number)defaultConfig.get(Config.TOPOLOGY_COMPONENT_GPU_PERCENT);
 
         if(res == null) {
             ret.put(Config.TOPOLOGY_COMPONENT_RESOURCES_ONHEAP_MEMORY_MB, onHeapDefault);
             ret.put(Config.TOPOLOGY_COMPONENT_RESOURCES_OFFHEAP_MEMORY_MB, offHeapDefault);
             ret.put(Config.TOPOLOGY_COMPONENT_CPU_PCORE_PERCENT, cpuLoadDefault);
+            ret.put(Config.TOPOLOGY_COMPONENT_GPU_PERCENT, gpuLoadDefualt);
             return ret;
         }
 
         Number onHeap = res.get(Config.TOPOLOGY_COMPONENT_RESOURCES_ONHEAP_MEMORY_MB);
         Number offHeap = res.get(Config.TOPOLOGY_COMPONENT_RESOURCES_OFFHEAP_MEMORY_MB);
         Number cpuLoad = res.get(Config.TOPOLOGY_COMPONENT_CPU_PCORE_PERCENT);
+        Number gpuLoad = res.get(Config.TOPOLOGY_COMPONENT_GPU_PERCENT);
 
         /* We take the max of the default and whatever the user put in here.
            Each node's resources can be the sum of several operations, so the simplest
@@ -580,9 +593,17 @@ public class TridentTopology {
             cpuLoad = Math.max(cpuLoad.doubleValue(), cpuLoadDefault.doubleValue());
         }
 
+        if(gpuLoad == null) {
+            gpuLoad = gpuLoadDefualt;
+        }
+        else {
+            gpuLoad = Math.max(gpuLoad.doubleValue(), gpuLoadDefualt.doubleValue());
+        }
+
         ret.put(Config.TOPOLOGY_COMPONENT_RESOURCES_ONHEAP_MEMORY_MB, onHeap);
         ret.put(Config.TOPOLOGY_COMPONENT_RESOURCES_OFFHEAP_MEMORY_MB, offHeap);
         ret.put(Config.TOPOLOGY_COMPONENT_CPU_PCORE_PERCENT, cpuLoad);
+        ret.put(Config.TOPOLOGY_COMPONENT_GPU_PERCENT, gpuLoad);
 
         return ret;
     }

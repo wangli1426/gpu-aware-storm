@@ -64,6 +64,7 @@ public class SupervisorSummary implements org.apache.thrift.TBase<SupervisorSumm
   private static final org.apache.thrift.protocol.TField TOTAL_RESOURCES_FIELD_DESC = new org.apache.thrift.protocol.TField("total_resources", org.apache.thrift.protocol.TType.MAP, (short)7);
   private static final org.apache.thrift.protocol.TField USED_MEM_FIELD_DESC = new org.apache.thrift.protocol.TField("used_mem", org.apache.thrift.protocol.TType.DOUBLE, (short)8);
   private static final org.apache.thrift.protocol.TField USED_CPU_FIELD_DESC = new org.apache.thrift.protocol.TField("used_cpu", org.apache.thrift.protocol.TType.DOUBLE, (short)9);
+  private static final org.apache.thrift.protocol.TField USED_GPU_FIELD_DESC = new org.apache.thrift.protocol.TField("used_gpu", org.apache.thrift.protocol.TType.DOUBLE, (short)10);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -80,6 +81,7 @@ public class SupervisorSummary implements org.apache.thrift.TBase<SupervisorSumm
   private Map<String,Double> total_resources; // optional
   private double used_mem; // optional
   private double used_cpu; // optional
+  private double used_gpu; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -91,7 +93,8 @@ public class SupervisorSummary implements org.apache.thrift.TBase<SupervisorSumm
     VERSION((short)6, "version"),
     TOTAL_RESOURCES((short)7, "total_resources"),
     USED_MEM((short)8, "used_mem"),
-    USED_CPU((short)9, "used_cpu");
+    USED_CPU((short)9, "used_cpu"),
+    USED_GPU((short)10, "used_gpu");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -124,6 +127,8 @@ public class SupervisorSummary implements org.apache.thrift.TBase<SupervisorSumm
           return USED_MEM;
         case 9: // USED_CPU
           return USED_CPU;
+        case 10: // USED_GPU
+          return USED_GPU;
         default:
           return null;
       }
@@ -169,8 +174,9 @@ public class SupervisorSummary implements org.apache.thrift.TBase<SupervisorSumm
   private static final int __NUM_USED_WORKERS_ISSET_ID = 2;
   private static final int __USED_MEM_ISSET_ID = 3;
   private static final int __USED_CPU_ISSET_ID = 4;
+  private static final int __USED_GPU_ISSET_ID = 5;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.VERSION,_Fields.TOTAL_RESOURCES,_Fields.USED_MEM,_Fields.USED_CPU};
+  private static final _Fields optionals[] = {_Fields.VERSION,_Fields.TOTAL_RESOURCES,_Fields.USED_MEM,_Fields.USED_CPU,_Fields.USED_GPU};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -193,6 +199,8 @@ public class SupervisorSummary implements org.apache.thrift.TBase<SupervisorSumm
     tmpMap.put(_Fields.USED_MEM, new org.apache.thrift.meta_data.FieldMetaData("used_mem", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.DOUBLE)));
     tmpMap.put(_Fields.USED_CPU, new org.apache.thrift.meta_data.FieldMetaData("used_cpu", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.DOUBLE)));
+    tmpMap.put(_Fields.USED_GPU, new org.apache.thrift.meta_data.FieldMetaData("used_gpu", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.DOUBLE)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(SupervisorSummary.class, metaDataMap);
@@ -244,6 +252,7 @@ public class SupervisorSummary implements org.apache.thrift.TBase<SupervisorSumm
     }
     this.used_mem = other.used_mem;
     this.used_cpu = other.used_cpu;
+    this.used_gpu = other.used_gpu;
   }
 
   public SupervisorSummary deepCopy() {
@@ -267,6 +276,8 @@ public class SupervisorSummary implements org.apache.thrift.TBase<SupervisorSumm
     this.used_mem = 0.0;
     set_used_cpu_isSet(false);
     this.used_cpu = 0.0;
+    set_used_gpu_isSet(false);
+    this.used_gpu = 0.0;
   }
 
   public String get_host() {
@@ -482,6 +493,28 @@ public class SupervisorSummary implements org.apache.thrift.TBase<SupervisorSumm
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __USED_CPU_ISSET_ID, value);
   }
 
+  public double get_used_gpu() {
+    return this.used_gpu;
+  }
+
+  public void set_used_gpu(double used_gpu) {
+    this.used_gpu = used_gpu;
+    set_used_gpu_isSet(true);
+  }
+
+  public void unset_used_gpu() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __USED_GPU_ISSET_ID);
+  }
+
+  /** Returns true if field used_gpu is set (has been assigned a value) and false otherwise */
+  public boolean is_set_used_gpu() {
+    return EncodingUtils.testBit(__isset_bitfield, __USED_GPU_ISSET_ID);
+  }
+
+  public void set_used_gpu_isSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __USED_GPU_ISSET_ID, value);
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case HOST:
@@ -556,6 +589,14 @@ public class SupervisorSummary implements org.apache.thrift.TBase<SupervisorSumm
       }
       break;
 
+    case USED_GPU:
+      if (value == null) {
+        unset_used_gpu();
+      } else {
+        set_used_gpu((Double)value);
+      }
+      break;
+
     }
   }
 
@@ -588,6 +629,9 @@ public class SupervisorSummary implements org.apache.thrift.TBase<SupervisorSumm
     case USED_CPU:
       return get_used_cpu();
 
+    case USED_GPU:
+      return get_used_gpu();
+
     }
     throw new IllegalStateException();
   }
@@ -617,6 +661,8 @@ public class SupervisorSummary implements org.apache.thrift.TBase<SupervisorSumm
       return is_set_used_mem();
     case USED_CPU:
       return is_set_used_cpu();
+    case USED_GPU:
+      return is_set_used_gpu();
     }
     throw new IllegalStateException();
   }
@@ -715,6 +761,15 @@ public class SupervisorSummary implements org.apache.thrift.TBase<SupervisorSumm
         return false;
     }
 
+    boolean this_present_used_gpu = true && this.is_set_used_gpu();
+    boolean that_present_used_gpu = true && that.is_set_used_gpu();
+    if (this_present_used_gpu || that_present_used_gpu) {
+      if (!(this_present_used_gpu && that_present_used_gpu))
+        return false;
+      if (this.used_gpu != that.used_gpu)
+        return false;
+    }
+
     return true;
   }
 
@@ -766,6 +821,11 @@ public class SupervisorSummary implements org.apache.thrift.TBase<SupervisorSumm
     list.add(present_used_cpu);
     if (present_used_cpu)
       list.add(used_cpu);
+
+    boolean present_used_gpu = true && (is_set_used_gpu());
+    list.add(present_used_gpu);
+    if (present_used_gpu)
+      list.add(used_gpu);
 
     return list.hashCode();
   }
@@ -868,6 +928,16 @@ public class SupervisorSummary implements org.apache.thrift.TBase<SupervisorSumm
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(is_set_used_gpu()).compareTo(other.is_set_used_gpu());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (is_set_used_gpu()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.used_gpu, other.used_gpu);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -945,6 +1015,12 @@ public class SupervisorSummary implements org.apache.thrift.TBase<SupervisorSumm
       if (!first) sb.append(", ");
       sb.append("used_cpu:");
       sb.append(this.used_cpu);
+      first = false;
+    }
+    if (is_set_used_gpu()) {
+      if (!first) sb.append(", ");
+      sb.append("used_gpu:");
+      sb.append(this.used_gpu);
       first = false;
     }
     sb.append(")");
@@ -1096,6 +1172,14 @@ public class SupervisorSummary implements org.apache.thrift.TBase<SupervisorSumm
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 10: // USED_GPU
+            if (schemeField.type == org.apache.thrift.protocol.TType.DOUBLE) {
+              struct.used_gpu = iprot.readDouble();
+              struct.set_used_gpu_isSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -1160,6 +1244,11 @@ public class SupervisorSummary implements org.apache.thrift.TBase<SupervisorSumm
         oprot.writeDouble(struct.used_cpu);
         oprot.writeFieldEnd();
       }
+      if (struct.is_set_used_gpu()) {
+        oprot.writeFieldBegin(USED_GPU_FIELD_DESC);
+        oprot.writeDouble(struct.used_gpu);
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -1195,7 +1284,10 @@ public class SupervisorSummary implements org.apache.thrift.TBase<SupervisorSumm
       if (struct.is_set_used_cpu()) {
         optionals.set(3);
       }
-      oprot.writeBitSet(optionals, 4);
+      if (struct.is_set_used_gpu()) {
+        optionals.set(4);
+      }
+      oprot.writeBitSet(optionals, 5);
       if (struct.is_set_version()) {
         oprot.writeString(struct.version);
       }
@@ -1215,6 +1307,9 @@ public class SupervisorSummary implements org.apache.thrift.TBase<SupervisorSumm
       if (struct.is_set_used_cpu()) {
         oprot.writeDouble(struct.used_cpu);
       }
+      if (struct.is_set_used_gpu()) {
+        oprot.writeDouble(struct.used_gpu);
+      }
     }
 
     @Override
@@ -1230,7 +1325,7 @@ public class SupervisorSummary implements org.apache.thrift.TBase<SupervisorSumm
       struct.set_num_used_workers_isSet(true);
       struct.supervisor_id = iprot.readString();
       struct.set_supervisor_id_isSet(true);
-      BitSet incoming = iprot.readBitSet(4);
+      BitSet incoming = iprot.readBitSet(5);
       if (incoming.get(0)) {
         struct.version = iprot.readString();
         struct.set_version_isSet(true);
@@ -1257,6 +1352,10 @@ public class SupervisorSummary implements org.apache.thrift.TBase<SupervisorSumm
       if (incoming.get(3)) {
         struct.used_cpu = iprot.readDouble();
         struct.set_used_cpu_isSet(true);
+      }
+      if (incoming.get(4)) {
+        struct.used_gpu = iprot.readDouble();
+        struct.set_used_gpu_isSet(true);
       }
     }
   }

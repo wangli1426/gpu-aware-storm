@@ -129,4 +129,10 @@ public class SupervisorDetails {
         assert totalCPU != null;
         return totalCPU;
     }
+
+    public Double getTotalGPU() {
+        Double totalGPU = getTotalResource(Config.SUPERVISOR_GPU_CAPACITY);
+        assert totalGPU != null;
+        return totalGPU;
+    }
 }

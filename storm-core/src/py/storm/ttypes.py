@@ -2017,6 +2017,8 @@ class TopologySummary:
    - assigned_memonheap
    - assigned_memoffheap
    - assigned_cpu
+   - requested_gpu
+   - assigned_gpu
   """
 
   thrift_spec = (
@@ -2547,9 +2549,11 @@ class TopologySummary:
     (524, TType.DOUBLE, 'assigned_memonheap', None, None, ), # 524
     (525, TType.DOUBLE, 'assigned_memoffheap', None, None, ), # 525
     (526, TType.DOUBLE, 'assigned_cpu', None, None, ), # 526
+    (527, TType.DOUBLE, 'requested_gpu', None, None, ), # 527
+    (528, TType.DOUBLE, 'assigned_gpu', None, None, ), # 528
   )
 
-  def __init__(self, id=None, name=None, num_tasks=None, num_executors=None, num_workers=None, uptime_secs=None, status=None, sched_status=None, owner=None, replication_count=None, requested_memonheap=None, requested_memoffheap=None, requested_cpu=None, assigned_memonheap=None, assigned_memoffheap=None, assigned_cpu=None,):
+  def __init__(self, id=None, name=None, num_tasks=None, num_executors=None, num_workers=None, uptime_secs=None, status=None, sched_status=None, owner=None, replication_count=None, requested_memonheap=None, requested_memoffheap=None, requested_cpu=None, assigned_memonheap=None, assigned_memoffheap=None, assigned_cpu=None, requested_gpu=None, assigned_gpu=None,):
     self.id = id
     self.name = name
     self.num_tasks = num_tasks
@@ -2566,6 +2570,8 @@ class TopologySummary:
     self.assigned_memonheap = assigned_memonheap
     self.assigned_memoffheap = assigned_memoffheap
     self.assigned_cpu = assigned_cpu
+    self.requested_gpu = requested_gpu
+    self.assigned_gpu = assigned_gpu
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -2656,6 +2662,16 @@ class TopologySummary:
           self.assigned_cpu = iprot.readDouble()
         else:
           iprot.skip(ftype)
+      elif fid == 527:
+        if ftype == TType.DOUBLE:
+          self.requested_gpu = iprot.readDouble()
+        else:
+          iprot.skip(ftype)
+      elif fid == 528:
+        if ftype == TType.DOUBLE:
+          self.assigned_gpu = iprot.readDouble()
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -2730,6 +2746,14 @@ class TopologySummary:
       oprot.writeFieldBegin('assigned_cpu', TType.DOUBLE, 526)
       oprot.writeDouble(self.assigned_cpu)
       oprot.writeFieldEnd()
+    if self.requested_gpu is not None:
+      oprot.writeFieldBegin('requested_gpu', TType.DOUBLE, 527)
+      oprot.writeDouble(self.requested_gpu)
+      oprot.writeFieldEnd()
+    if self.assigned_gpu is not None:
+      oprot.writeFieldBegin('assigned_gpu', TType.DOUBLE, 528)
+      oprot.writeDouble(self.assigned_gpu)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -2769,6 +2793,8 @@ class TopologySummary:
     value = (value * 31) ^ hash(self.assigned_memonheap)
     value = (value * 31) ^ hash(self.assigned_memoffheap)
     value = (value * 31) ^ hash(self.assigned_cpu)
+    value = (value * 31) ^ hash(self.requested_gpu)
+    value = (value * 31) ^ hash(self.assigned_gpu)
     return value
 
   def __repr__(self):
@@ -2794,6 +2820,7 @@ class SupervisorSummary:
    - total_resources
    - used_mem
    - used_cpu
+   - used_gpu
   """
 
   thrift_spec = (
@@ -2807,9 +2834,10 @@ class SupervisorSummary:
     (7, TType.MAP, 'total_resources', (TType.STRING,None,TType.DOUBLE,None), None, ), # 7
     (8, TType.DOUBLE, 'used_mem', None, None, ), # 8
     (9, TType.DOUBLE, 'used_cpu', None, None, ), # 9
+    (10, TType.DOUBLE, 'used_gpu', None, None, ), # 10
   )
 
-  def __init__(self, host=None, uptime_secs=None, num_workers=None, num_used_workers=None, supervisor_id=None, version=thrift_spec[6][4], total_resources=None, used_mem=None, used_cpu=None,):
+  def __init__(self, host=None, uptime_secs=None, num_workers=None, num_used_workers=None, supervisor_id=None, version=thrift_spec[6][4], total_resources=None, used_mem=None, used_cpu=None, used_gpu=None,):
     self.host = host
     self.uptime_secs = uptime_secs
     self.num_workers = num_workers
@@ -2819,6 +2847,7 @@ class SupervisorSummary:
     self.total_resources = total_resources
     self.used_mem = used_mem
     self.used_cpu = used_cpu
+    self.used_gpu = used_gpu
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -2880,6 +2909,11 @@ class SupervisorSummary:
           self.used_cpu = iprot.readDouble()
         else:
           iprot.skip(ftype)
+      elif fid == 10:
+        if ftype == TType.DOUBLE:
+          self.used_gpu = iprot.readDouble()
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -2930,6 +2964,10 @@ class SupervisorSummary:
       oprot.writeFieldBegin('used_cpu', TType.DOUBLE, 9)
       oprot.writeDouble(self.used_cpu)
       oprot.writeFieldEnd()
+    if self.used_gpu is not None:
+      oprot.writeFieldBegin('used_gpu', TType.DOUBLE, 10)
+      oprot.writeDouble(self.used_gpu)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -2958,6 +2996,7 @@ class SupervisorSummary:
     value = (value * 31) ^ hash(self.total_resources)
     value = (value * 31) ^ hash(self.used_mem)
     value = (value * 31) ^ hash(self.used_cpu)
+    value = (value * 31) ^ hash(self.used_gpu)
     return value
 
   def __repr__(self):
@@ -4287,6 +4326,8 @@ class TopologyInfo:
    - assigned_memonheap
    - assigned_memoffheap
    - assigned_cpu
+   - requested_gpu
+   - assigned_gpu
   """
 
   thrift_spec = (
@@ -4817,9 +4858,11 @@ class TopologyInfo:
     (524, TType.DOUBLE, 'assigned_memonheap', None, None, ), # 524
     (525, TType.DOUBLE, 'assigned_memoffheap', None, None, ), # 525
     (526, TType.DOUBLE, 'assigned_cpu', None, None, ), # 526
+    (527, TType.DOUBLE, 'requested_gpu', None, None, ), # 527
+    (528, TType.DOUBLE, 'assigned_gpu', None, None, ), # 528
   )
 
-  def __init__(self, id=None, name=None, uptime_secs=None, executors=None, status=None, errors=None, component_debug=None, sched_status=None, owner=None, replication_count=None, requested_memonheap=None, requested_memoffheap=None, requested_cpu=None, assigned_memonheap=None, assigned_memoffheap=None, assigned_cpu=None,):
+  def __init__(self, id=None, name=None, uptime_secs=None, executors=None, status=None, errors=None, component_debug=None, sched_status=None, owner=None, replication_count=None, requested_memonheap=None, requested_memoffheap=None, requested_cpu=None, assigned_memonheap=None, assigned_memoffheap=None, assigned_cpu=None, requested_gpu=None, assigned_gpu=None,):
     self.id = id
     self.name = name
     self.uptime_secs = uptime_secs
@@ -4836,6 +4879,8 @@ class TopologyInfo:
     self.assigned_memonheap = assigned_memonheap
     self.assigned_memoffheap = assigned_memoffheap
     self.assigned_cpu = assigned_cpu
+    self.requested_gpu = requested_gpu
+    self.assigned_gpu = assigned_gpu
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -4951,6 +4996,16 @@ class TopologyInfo:
           self.assigned_cpu = iprot.readDouble()
         else:
           iprot.skip(ftype)
+      elif fid == 527:
+        if ftype == TType.DOUBLE:
+          self.requested_gpu = iprot.readDouble()
+        else:
+          iprot.skip(ftype)
+      elif fid == 528:
+        if ftype == TType.DOUBLE:
+          self.assigned_gpu = iprot.readDouble()
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -5039,6 +5094,14 @@ class TopologyInfo:
       oprot.writeFieldBegin('assigned_cpu', TType.DOUBLE, 526)
       oprot.writeDouble(self.assigned_cpu)
       oprot.writeFieldEnd()
+    if self.requested_gpu is not None:
+      oprot.writeFieldBegin('requested_gpu', TType.DOUBLE, 527)
+      oprot.writeDouble(self.requested_gpu)
+      oprot.writeFieldEnd()
+    if self.assigned_gpu is not None:
+      oprot.writeFieldBegin('assigned_gpu', TType.DOUBLE, 528)
+      oprot.writeDouble(self.assigned_gpu)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -5076,6 +5139,8 @@ class TopologyInfo:
     value = (value * 31) ^ hash(self.assigned_memonheap)
     value = (value * 31) ^ hash(self.assigned_memoffheap)
     value = (value * 31) ^ hash(self.assigned_cpu)
+    value = (value * 31) ^ hash(self.requested_gpu)
+    value = (value * 31) ^ hash(self.assigned_gpu)
     return value
 
   def __repr__(self):
@@ -5783,6 +5848,8 @@ class WorkerSummary:
    - assigned_memonheap
    - assigned_memoffheap
    - assigned_cpu
+   - requested_gpu
+   - assigned_gpu
   """
 
   thrift_spec = (
@@ -6313,9 +6380,11 @@ class WorkerSummary:
     (524, TType.DOUBLE, 'assigned_memonheap', None, None, ), # 524
     (525, TType.DOUBLE, 'assigned_memoffheap', None, None, ), # 525
     (526, TType.DOUBLE, 'assigned_cpu', None, None, ), # 526
+    (527, TType.DOUBLE, 'requested_gpu', None, None, ), # 527
+    (528, TType.DOUBLE, 'assigned_gpu', None, None, ), # 528
   )
 
-  def __init__(self, supervisor_id=None, host=None, port=None, topology_id=None, topology_name=None, num_executors=None, component_to_num_tasks=None, time_secs=None, uptime_secs=None, requested_memonheap=None, requested_memoffheap=None, requested_cpu=None, assigned_memonheap=None, assigned_memoffheap=None, assigned_cpu=None,):
+  def __init__(self, supervisor_id=None, host=None, port=None, topology_id=None, topology_name=None, num_executors=None, component_to_num_tasks=None, time_secs=None, uptime_secs=None, requested_memonheap=None, requested_memoffheap=None, requested_cpu=None, assigned_memonheap=None, assigned_memoffheap=None, assigned_cpu=None, requested_gpu=None, assigned_gpu=None,):
     self.supervisor_id = supervisor_id
     self.host = host
     self.port = port
@@ -6331,6 +6400,8 @@ class WorkerSummary:
     self.assigned_memonheap = assigned_memonheap
     self.assigned_memoffheap = assigned_memoffheap
     self.assigned_cpu = assigned_cpu
+    self.requested_gpu = requested_gpu
+    self.assigned_gpu = assigned_gpu
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -6422,6 +6493,16 @@ class WorkerSummary:
           self.assigned_cpu = iprot.readDouble()
         else:
           iprot.skip(ftype)
+      elif fid == 527:
+        if ftype == TType.DOUBLE:
+          self.requested_gpu = iprot.readDouble()
+        else:
+          iprot.skip(ftype)
+      elif fid == 528:
+        if ftype == TType.DOUBLE:
+          self.assigned_gpu = iprot.readDouble()
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -6496,6 +6577,14 @@ class WorkerSummary:
       oprot.writeFieldBegin('assigned_cpu', TType.DOUBLE, 526)
       oprot.writeDouble(self.assigned_cpu)
       oprot.writeFieldEnd()
+    if self.requested_gpu is not None:
+      oprot.writeFieldBegin('requested_gpu', TType.DOUBLE, 527)
+      oprot.writeDouble(self.requested_gpu)
+      oprot.writeFieldEnd()
+    if self.assigned_gpu is not None:
+      oprot.writeFieldBegin('assigned_gpu', TType.DOUBLE, 528)
+      oprot.writeDouble(self.assigned_gpu)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -6520,6 +6609,8 @@ class WorkerSummary:
     value = (value * 31) ^ hash(self.assigned_memonheap)
     value = (value * 31) ^ hash(self.assigned_memoffheap)
     value = (value * 31) ^ hash(self.assigned_cpu)
+    value = (value * 31) ^ hash(self.requested_gpu)
+    value = (value * 31) ^ hash(self.assigned_gpu)
     return value
 
   def __repr__(self):
@@ -6654,6 +6745,8 @@ class TopologyPageInfo:
    - assigned_memonheap
    - assigned_memoffheap
    - assigned_cpu
+   - requested_gpu
+   - assigned_gpu
   """
 
   thrift_spec = (
@@ -7184,9 +7277,11 @@ class TopologyPageInfo:
     (524, TType.DOUBLE, 'assigned_memonheap', None, None, ), # 524
     (525, TType.DOUBLE, 'assigned_memoffheap', None, None, ), # 525
     (526, TType.DOUBLE, 'assigned_cpu', None, None, ), # 526
+    (527, TType.DOUBLE, 'requested_gpu', None, None, ), # 527
+    (528, TType.DOUBLE, 'assigned_gpu', None, None, ), # 528
   )
 
-  def __init__(self, id=None, name=None, uptime_secs=None, status=None, num_tasks=None, num_workers=None, num_executors=None, topology_conf=None, id_to_spout_agg_stats=None, id_to_bolt_agg_stats=None, sched_status=None, topology_stats=None, owner=None, debug_options=None, replication_count=None, workers=None, requested_memonheap=None, requested_memoffheap=None, requested_cpu=None, assigned_memonheap=None, assigned_memoffheap=None, assigned_cpu=None,):
+  def __init__(self, id=None, name=None, uptime_secs=None, status=None, num_tasks=None, num_workers=None, num_executors=None, topology_conf=None, id_to_spout_agg_stats=None, id_to_bolt_agg_stats=None, sched_status=None, topology_stats=None, owner=None, debug_options=None, replication_count=None, workers=None, requested_memonheap=None, requested_memoffheap=None, requested_cpu=None, assigned_memonheap=None, assigned_memoffheap=None, assigned_cpu=None, requested_gpu=None, assigned_gpu=None,):
     self.id = id
     self.name = name
     self.uptime_secs = uptime_secs
@@ -7209,6 +7304,8 @@ class TopologyPageInfo:
     self.assigned_memonheap = assigned_memonheap
     self.assigned_memoffheap = assigned_memoffheap
     self.assigned_cpu = assigned_cpu
+    self.requested_gpu = requested_gpu
+    self.assigned_gpu = assigned_gpu
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -7351,6 +7448,16 @@ class TopologyPageInfo:
           self.assigned_cpu = iprot.readDouble()
         else:
           iprot.skip(ftype)
+      elif fid == 527:
+        if ftype == TType.DOUBLE:
+          self.requested_gpu = iprot.readDouble()
+        else:
+          iprot.skip(ftype)
+      elif fid == 528:
+        if ftype == TType.DOUBLE:
+          self.assigned_gpu = iprot.readDouble()
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -7460,6 +7567,14 @@ class TopologyPageInfo:
       oprot.writeFieldBegin('assigned_cpu', TType.DOUBLE, 526)
       oprot.writeDouble(self.assigned_cpu)
       oprot.writeFieldEnd()
+    if self.requested_gpu is not None:
+      oprot.writeFieldBegin('requested_gpu', TType.DOUBLE, 527)
+      oprot.writeDouble(self.requested_gpu)
+      oprot.writeFieldEnd()
+    if self.assigned_gpu is not None:
+      oprot.writeFieldBegin('assigned_gpu', TType.DOUBLE, 528)
+      oprot.writeDouble(self.assigned_gpu)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -7493,6 +7608,8 @@ class TopologyPageInfo:
     value = (value * 31) ^ hash(self.assigned_memonheap)
     value = (value * 31) ^ hash(self.assigned_memoffheap)
     value = (value * 31) ^ hash(self.assigned_cpu)
+    value = (value * 31) ^ hash(self.requested_gpu)
+    value = (value * 31) ^ hash(self.assigned_gpu)
     return value
 
   def __repr__(self):
@@ -8994,6 +9111,7 @@ class WorkerResources:
    - mem_on_heap
    - mem_off_heap
    - cpu
+   - gpu
   """
 
   thrift_spec = (
@@ -9001,12 +9119,14 @@ class WorkerResources:
     (1, TType.DOUBLE, 'mem_on_heap', None, None, ), # 1
     (2, TType.DOUBLE, 'mem_off_heap', None, None, ), # 2
     (3, TType.DOUBLE, 'cpu', None, None, ), # 3
+    (4, TType.DOUBLE, 'gpu', None, None, ), # 4
   )
 
-  def __init__(self, mem_on_heap=None, mem_off_heap=None, cpu=None,):
+  def __init__(self, mem_on_heap=None, mem_off_heap=None, cpu=None, gpu=None,):
     self.mem_on_heap = mem_on_heap
     self.mem_off_heap = mem_off_heap
     self.cpu = cpu
+    self.gpu = gpu
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -9032,6 +9152,11 @@ class WorkerResources:
           self.cpu = iprot.readDouble()
         else:
           iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.DOUBLE:
+          self.gpu = iprot.readDouble()
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -9054,6 +9179,10 @@ class WorkerResources:
       oprot.writeFieldBegin('cpu', TType.DOUBLE, 3)
       oprot.writeDouble(self.cpu)
       oprot.writeFieldEnd()
+    if self.gpu is not None:
+      oprot.writeFieldBegin('gpu', TType.DOUBLE, 4)
+      oprot.writeDouble(self.gpu)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -9066,6 +9195,7 @@ class WorkerResources:
     value = (value * 31) ^ hash(self.mem_on_heap)
     value = (value * 31) ^ hash(self.mem_off_heap)
     value = (value * 31) ^ hash(self.cpu)
+    value = (value * 31) ^ hash(self.gpu)
     return value
 
   def __repr__(self):

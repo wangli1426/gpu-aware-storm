@@ -1403,6 +1403,9 @@ public class Config extends HashMap<String, Object> {
     @isPositiveNumber
     public static final String SUPERVISOR_CPU_CAPACITY = "supervisor.cpu.capacity";
 
+    @isPositiveNumber(includeZero = true)
+    public static final String SUPERVISOR_GPU_CAPACITY = "supervisor.gpu.capacity";
+
     /**
      * The jvm opts provided to workers launched by this supervisor.
      * All "%ID%", "%WORKER-ID%", "%TOPOLOGY-ID%",
@@ -1618,6 +1621,14 @@ public class Config extends HashMap<String, Object> {
      */
     @isPositiveNumber(includeZero = true)
     public static final String TOPOLOGY_COMPONENT_CPU_PCORE_PERCENT = "topology.component.cpu.pcore.percent";
+
+    /**
+     * The config indicates the percentage of gpu an instance(executor) of a component will use.
+     * Assuming the a gpu value to be 100, a value of 10 indicates 10% of the gpu.
+     * A default value will be set for this config if user does not override
+     */
+    @isPositiveNumber(includeZero = true)
+    public static final String TOPOLOGY_COMPONENT_GPU_PERCENT = "topology.component.GPU.percent";
 
     /**
      * The class name of the {@link org.apache.storm.state.StateProvider} implementation. If not specified

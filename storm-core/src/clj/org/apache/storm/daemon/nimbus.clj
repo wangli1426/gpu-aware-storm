@@ -680,9 +680,9 @@
                        executor->node+port (:executor->node+port assignment)
                        worker->resources (:worker->resources assignment)
                        ;; making a map from node+port to WorkerSlot with allocated resources
-                       node+port->slot (into {} (for [[[node port] [mem-on-heap mem-off-heap cpu]] worker->resources]
+                       node+port->slot (into {} (for [[[node port] [mem-on-heap mem-off-heap cpu gpu]] worker->resources]
                                                   {[node port]
-                                                   (WorkerSlot. node port mem-on-heap mem-off-heap cpu)}))
+                                                   (WorkerSlot. node port mem-on-heap mem-off-heap cpu gpu)}))
                        executor->slot (into {} (for [[executor [node port]] executor->node+port]
                                                  ;; filter out the dead executors
                                                  (if (contains? alive-executors executor)
@@ -763,7 +763,7 @@
 ;TODO: when translating this function, you should replace the map-val with a proper for loop HERE
 (defn convert-assignments-to-worker->resources [new-scheduler-assignments]
   "convert {topology-id -> SchedulerAssignment} to
-           {topology-id -> {[node port] [mem-on-heap mem-off-heap cpu]}}
+           {topology-id -> {[node port] [mem-on-heap mem-off-heap cpu gpu]}}
    Make sure this can deal with other non-RAS schedulers
    later we may further support map-for-any-resources"
   (map-val (fn [^SchedulerAssignment assignment]
@@ -772,7 +772,8 @@
                   .values
                   (#(into {} (for [^WorkerSlot slot %]
                               {[(.getNodeId slot) (.getPort slot)]
-                               [(.getAllocatedMemOnHeap slot) (.getAllocatedMemOffHeap slot) (.getAllocatedCpu slot)]
+                               [(.getAllocatedMemOnHeap slot) (.getAllocatedMemOffHeap slot) (.getAllocatedCpu slot)
+                                (.getAllocatedGpu slot)]
                                })))))
            new-scheduler-assignments))
 
@@ -795,8 +796,8 @@
 
     new-topology->executor->node+port))
 
-(defrecord TopologyResources [requested-mem-on-heap requested-mem-off-heap requested-cpu
-                              assigned-mem-on-heap assigned-mem-off-heap assigned-cpu])
+(defrecord TopologyResources [requested-mem-on-heap requested-mem-off-heap requested-cpu requested-gpu
+                              assigned-mem-on-heap assigned-mem-off-heap assigned-cpu assigned-gpu])
  
 ;; public so it can be mocked out
 (defn compute-new-scheduler-assignments [nimbus existing-assignments topologies scratch-topology-id]
@@ -852,14 +853,16 @@
 
     ; Remove both of swaps below at first opportunity. This is a hack for non-ras scheduler topology and worker resources.
     (swap! (:id->resources nimbus) merge (into {} (map (fn [[k v]] [k (->TopologyResources (nth v 0) (nth v 1) (nth v 2)
-                                                                                           (nth v 3) (nth v 4) (nth v 5))])
+                                                                                           (nth v 3) (nth v 4) (nth v 5)
+                                                                                           (nth v 6) (nth v 7))])
                                                        (.getTopologyResourcesMap cluster))))
     ; Remove this also at first chance
     (swap! (:id->worker-resources nimbus) merge 
            (into {} (map (fn [[k v]] [k (map-val #(doto (WorkerResources.)
                                                         (.set_mem_on_heap (nth % 0))
                                                         (.set_mem_off_heap (nth % 1))
-                                                        (.set_cpu (nth % 2))) v)])
+                                                        (.set_cpu (nth % 2))
+                                                        (.set_gpu (nth % 3))) v)])
                          (.getWorkerResourcesMap cluster))))
 
     (.getAssignments cluster)))
@@ -868,7 +871,6 @@
   "Returns mappings in m2 that aren't in m1"
   [m1 m2]
   (into {} (filter (fn [[k v]] (not= v (m1 k))) m2)))
-
 (defn get-resources-for-topology [nimbus topo-id]
   (or (get @(:id->resources nimbus) topo-id)
       (try
@@ -877,25 +879,27 @@
               assigned-resources (->> (clojurify-assignment (.assignmentInfo storm-cluster-state topo-id nil))
                                       :worker->resources
                                       (vals)
-                                        ; Default to [[0 0 0]] if there are no values
-                                      (#(or % [[0 0 0]]))
-                                        ; [[on-heap, off-heap, cpu]] -> [[on-heap], [off-heap], [cpu]]
+                                        ; Default to [[0 0 0 0]] if there are no values
+                                      (#(or % [[0 0 0 0]]))
+                                        ; [[on-heap, off-heap, cpu, gpu]] -> [[on-heap], [off-heap], [cpu], [gpu]]
                                       (apply map vector)
-                                        ; [[on-heap], [off-heap], [cpu]] -> [on-heap-sum, off-heap-sum, cpu-sum]
+                                        ; [[on-heap], [off-heap], [cpu], [gpu]] -> [on-heap-sum, off-heap-sum, cpu-sum, gpu-sum]
                                       (map (partial reduce +)))
               worker-resources (->TopologyResources (.getTotalRequestedMemOnHeap topology-details)
                                                     (.getTotalRequestedMemOffHeap topology-details)
                                                     (.getTotalRequestedCpu topology-details)
+                                                    (.getTotalRequestedGpu topology-details)
                                                     (nth assigned-resources 0)
                                                     (nth assigned-resources 1)
-                                                    (nth assigned-resources 2))]
+                                                    (nth assigned-resources 2)
+                                                    (nth assigned-resources 3))]
           (swap! (:id->resources nimbus) assoc topo-id worker-resources)
           worker-resources)
         (catch KeyNotFoundException e
           ; This can happen when a topology is first coming up.
           ; It's thrown by the blobstore code.
           (log-error e "Failed to get topology details")
-          (->TopologyResources 0 0 0 0 0 0)))))
+          (->TopologyResources 0 0 0 0 0 0 0 0)))))
 
 (defn- get-worker-resources-for-topology [nimbus topo-id]
   (or (get @(:id->worker-resources nimbus) topo-id)
@@ -907,7 +911,8 @@
                                                          (doto (WorkerResources.)
                                                              (.set_mem_on_heap (nth (val %) 0))
                                                              (.set_mem_off_heap (nth (val %) 1))
-                                                             (.set_cpu (nth (val %) 2)))}) assigned-resources))]
+                                                             (.set_cpu (nth (val %) 2))
+                                                             (.set_gpu (nth (val %) 3)))}) assigned-resources))]
           (swap! (:id->worker-resources nimbus) assoc topo-id worker-resources)
           worker-resources))))
           
@@ -1455,9 +1460,10 @@
                                       (count (:used-ports info))
                                       id)]
       (.set_total_resources sup-sum (map-val double (:resources-map info)))
-      (when-let [[total-mem total-cpu used-mem used-cpu] (.get @(:node-id->resources nimbus) id)]
+      (when-let [[total-mem total-cpu total-gpu used-mem used-cpu used-gpu] (.get @(:node-id->resources nimbus) id)]
         (.set_used_mem sup-sum (Utils/nullToZero used-mem))
-        (.set_used_cpu sup-sum (Utils/nullToZero used-cpu)))
+        (.set_used_cpu sup-sum (Utils/nullToZero used-cpu))
+        (.set_used_gpu sup-sum (Utils/nullToZero used-gpu)))
       (when-let [version (:version info)] (.set_version sup-sum version))
       sup-sum))
 
@@ -1531,9 +1537,11 @@
                                       (.set_requested_memonheap topo-summ (:requested-mem-on-heap resources))
                                       (.set_requested_memoffheap topo-summ (:requested-mem-off-heap resources))
                                       (.set_requested_cpu topo-summ (:requested-cpu resources))
+                                      (.set_requested_gpu topo-summ (:requested-gpu resources))
                                       (.set_assigned_memonheap topo-summ (:assigned-mem-on-heap resources))
                                       (.set_assigned_memoffheap topo-summ (:assigned-mem-off-heap resources))
-                                      (.set_assigned_cpu topo-summ (:assigned-cpu resources)))
+                                      (.set_assigned_cpu topo-summ (:assigned-cpu resources))
+                                      (.set_assigned_gpu topo-summ (:assigned-gpu resources)))
                                     (.set_replication_count topo-summ (get-blob-replication-count (ConfigUtils/masterStormCodeKey id) nimbus))
                                     topo-summ))
         ret (ClusterSummary. supervisor-summaries
@@ -1565,8 +1573,8 @@
                                (long (Time/currentTimeSecs)))
             :data-points     (map
                                (fn [[k v]] (DataPoint. k v))
-                               (select-keys supervisor-summ ["slotsTotal" "slotsUsed" "totalMem" "totalCpu"
-                                                             "usedMem" "usedCpu"]))})
+                               (select-keys supervisor-summ ["slotsTotal" "slotsUsed" "totalMem" "totalCpu" "totalGpu"
+                                                             "usedMem" "usedCpu" "usedGpu"]))})
          supervisors-summ)))
 
 (defn send-cluster-metrics-to-executors [nimbus]
@@ -2017,9 +2025,11 @@
               (.set_requested_memonheap topo-info (:requested-mem-on-heap resources))
               (.set_requested_memoffheap topo-info (:requested-mem-off-heap resources))
               (.set_requested_cpu topo-info (:requested-cpu resources))
+              (.set_requested_gpu topo-info (:requested-gpu resources))
               (.set_assigned_memonheap topo-info (:assigned-mem-on-heap resources))
               (.set_assigned_memoffheap topo-info (:assigned-mem-off-heap resources))
-              (.set_assigned_cpu topo-info (:assigned-cpu resources)))
+              (.set_assigned_cpu topo-info (:assigned-cpu resources))
+              (.set_assigned_gpu topo-info (:assigned-gpu resources)))
             (when-let [component->debug (:component->debug base)]
               ;TODO: when translating this function, you should replace the map-val with a proper for loop HERE
               (.set_component_debug topo-info (map-val converter/thriftify-debugoptions component->debug)))
@@ -2234,9 +2244,12 @@
             (.set_requested_memonheap topo-page-info (:requested-mem-on-heap resources))
             (.set_requested_memoffheap topo-page-info (:requested-mem-off-heap resources))
             (.set_requested_cpu topo-page-info (:requested-cpu resources))
+            (.set_requested_gpu topo-page-info (:requested-gpu resources))
             (.set_assigned_memonheap topo-page-info (:assigned-mem-on-heap resources))
             (.set_assigned_memoffheap topo-page-info (:assigned-mem-off-heap resources))
-            (.set_assigned_cpu topo-page-info (:assigned-cpu resources)))
+            (.set_assigned_cpu topo-page-info (:assigned-cpu resources))
+            (.set_assigned_gpu topo-page-info (:assigned-gpu resources))
+            )
           (doto topo-page-info
             (.set_name storm-name)
             (.set_status (extract-status-str base))

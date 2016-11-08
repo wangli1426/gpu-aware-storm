@@ -162,6 +162,7 @@ supervisor.memory.capacity.mb: 4096.0
 # using 100 makes it simple to set the desired value to the capacity measurement
 # for single threaded bolts
 supervisor.cpu.capacity: 400.0
+supervisor.gpu.capacity: 100.0
 
 ### worker.* configs are for task workers
 worker.heap.memory.mb: 768

@@ -46,6 +46,12 @@ public class TridentState implements ResourceDeclarer<TridentState> {
     }
 
     @Override
+    public TridentState setGPULoad(Number load) {
+        _node.setGPULoad(load);
+        return this;
+    }
+
+    @Override
     public TridentState setMemoryLoad(Number onHeap) {
         _node.setMemoryLoad(onHeap);
         return this;

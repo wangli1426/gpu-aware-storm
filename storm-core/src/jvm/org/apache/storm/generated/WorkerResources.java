@@ -58,6 +58,7 @@ public class WorkerResources implements org.apache.thrift.TBase<WorkerResources,
   private static final org.apache.thrift.protocol.TField MEM_ON_HEAP_FIELD_DESC = new org.apache.thrift.protocol.TField("mem_on_heap", org.apache.thrift.protocol.TType.DOUBLE, (short)1);
   private static final org.apache.thrift.protocol.TField MEM_OFF_HEAP_FIELD_DESC = new org.apache.thrift.protocol.TField("mem_off_heap", org.apache.thrift.protocol.TType.DOUBLE, (short)2);
   private static final org.apache.thrift.protocol.TField CPU_FIELD_DESC = new org.apache.thrift.protocol.TField("cpu", org.apache.thrift.protocol.TType.DOUBLE, (short)3);
+  private static final org.apache.thrift.protocol.TField GPU_FIELD_DESC = new org.apache.thrift.protocol.TField("gpu", org.apache.thrift.protocol.TType.DOUBLE, (short)4);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -68,12 +69,14 @@ public class WorkerResources implements org.apache.thrift.TBase<WorkerResources,
   private double mem_on_heap; // optional
   private double mem_off_heap; // optional
   private double cpu; // optional
+  private double gpu; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     MEM_ON_HEAP((short)1, "mem_on_heap"),
     MEM_OFF_HEAP((short)2, "mem_off_heap"),
-    CPU((short)3, "cpu");
+    CPU((short)3, "cpu"),
+    GPU((short)4, "gpu");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -94,6 +97,8 @@ public class WorkerResources implements org.apache.thrift.TBase<WorkerResources,
           return MEM_OFF_HEAP;
         case 3: // CPU
           return CPU;
+        case 4: // GPU
+          return GPU;
         default:
           return null;
       }
@@ -137,8 +142,9 @@ public class WorkerResources implements org.apache.thrift.TBase<WorkerResources,
   private static final int __MEM_ON_HEAP_ISSET_ID = 0;
   private static final int __MEM_OFF_HEAP_ISSET_ID = 1;
   private static final int __CPU_ISSET_ID = 2;
+  private static final int __GPU_ISSET_ID = 3;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.MEM_ON_HEAP,_Fields.MEM_OFF_HEAP,_Fields.CPU};
+  private static final _Fields optionals[] = {_Fields.MEM_ON_HEAP,_Fields.MEM_OFF_HEAP,_Fields.CPU,_Fields.GPU};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -147,6 +153,8 @@ public class WorkerResources implements org.apache.thrift.TBase<WorkerResources,
     tmpMap.put(_Fields.MEM_OFF_HEAP, new org.apache.thrift.meta_data.FieldMetaData("mem_off_heap", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.DOUBLE)));
     tmpMap.put(_Fields.CPU, new org.apache.thrift.meta_data.FieldMetaData("cpu", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.DOUBLE)));
+    tmpMap.put(_Fields.GPU, new org.apache.thrift.meta_data.FieldMetaData("gpu", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.DOUBLE)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(WorkerResources.class, metaDataMap);
@@ -163,6 +171,7 @@ public class WorkerResources implements org.apache.thrift.TBase<WorkerResources,
     this.mem_on_heap = other.mem_on_heap;
     this.mem_off_heap = other.mem_off_heap;
     this.cpu = other.cpu;
+    this.gpu = other.gpu;
   }
 
   public WorkerResources deepCopy() {
@@ -177,6 +186,8 @@ public class WorkerResources implements org.apache.thrift.TBase<WorkerResources,
     this.mem_off_heap = 0.0;
     set_cpu_isSet(false);
     this.cpu = 0.0;
+    set_gpu_isSet(false);
+    this.gpu = 0.0;
   }
 
   public double get_mem_on_heap() {
@@ -245,6 +256,28 @@ public class WorkerResources implements org.apache.thrift.TBase<WorkerResources,
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __CPU_ISSET_ID, value);
   }
 
+  public double get_gpu() {
+    return this.gpu;
+  }
+
+  public void set_gpu(double gpu) {
+    this.gpu = gpu;
+    set_gpu_isSet(true);
+  }
+
+  public void unset_gpu() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __GPU_ISSET_ID);
+  }
+
+  /** Returns true if field gpu is set (has been assigned a value) and false otherwise */
+  public boolean is_set_gpu() {
+    return EncodingUtils.testBit(__isset_bitfield, __GPU_ISSET_ID);
+  }
+
+  public void set_gpu_isSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __GPU_ISSET_ID, value);
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case MEM_ON_HEAP:
@@ -271,6 +304,14 @@ public class WorkerResources implements org.apache.thrift.TBase<WorkerResources,
       }
       break;
 
+    case GPU:
+      if (value == null) {
+        unset_gpu();
+      } else {
+        set_gpu((Double)value);
+      }
+      break;
+
     }
   }
 
@@ -284,6 +325,9 @@ public class WorkerResources implements org.apache.thrift.TBase<WorkerResources,
 
     case CPU:
       return get_cpu();
+
+    case GPU:
+      return get_gpu();
 
     }
     throw new IllegalStateException();
@@ -302,6 +346,8 @@ public class WorkerResources implements org.apache.thrift.TBase<WorkerResources,
       return is_set_mem_off_heap();
     case CPU:
       return is_set_cpu();
+    case GPU:
+      return is_set_gpu();
     }
     throw new IllegalStateException();
   }
@@ -346,6 +392,15 @@ public class WorkerResources implements org.apache.thrift.TBase<WorkerResources,
         return false;
     }
 
+    boolean this_present_gpu = true && this.is_set_gpu();
+    boolean that_present_gpu = true && that.is_set_gpu();
+    if (this_present_gpu || that_present_gpu) {
+      if (!(this_present_gpu && that_present_gpu))
+        return false;
+      if (this.gpu != that.gpu)
+        return false;
+    }
+
     return true;
   }
 
@@ -367,6 +422,11 @@ public class WorkerResources implements org.apache.thrift.TBase<WorkerResources,
     list.add(present_cpu);
     if (present_cpu)
       list.add(cpu);
+
+    boolean present_gpu = true && (is_set_gpu());
+    list.add(present_gpu);
+    if (present_gpu)
+      list.add(gpu);
 
     return list.hashCode();
   }
@@ -409,6 +469,16 @@ public class WorkerResources implements org.apache.thrift.TBase<WorkerResources,
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(is_set_gpu()).compareTo(other.is_set_gpu());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (is_set_gpu()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.gpu, other.gpu);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -444,6 +514,12 @@ public class WorkerResources implements org.apache.thrift.TBase<WorkerResources,
       if (!first) sb.append(", ");
       sb.append("cpu:");
       sb.append(this.cpu);
+      first = false;
+    }
+    if (is_set_gpu()) {
+      if (!first) sb.append(", ");
+      sb.append("gpu:");
+      sb.append(this.gpu);
       first = false;
     }
     sb.append(")");
@@ -515,6 +591,14 @@ public class WorkerResources implements org.apache.thrift.TBase<WorkerResources,
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 4: // GPU
+            if (schemeField.type == org.apache.thrift.protocol.TType.DOUBLE) {
+              struct.gpu = iprot.readDouble();
+              struct.set_gpu_isSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -541,6 +625,11 @@ public class WorkerResources implements org.apache.thrift.TBase<WorkerResources,
       if (struct.is_set_cpu()) {
         oprot.writeFieldBegin(CPU_FIELD_DESC);
         oprot.writeDouble(struct.cpu);
+        oprot.writeFieldEnd();
+      }
+      if (struct.is_set_gpu()) {
+        oprot.writeFieldBegin(GPU_FIELD_DESC);
+        oprot.writeDouble(struct.gpu);
         oprot.writeFieldEnd();
       }
       oprot.writeFieldStop();
@@ -570,7 +659,10 @@ public class WorkerResources implements org.apache.thrift.TBase<WorkerResources,
       if (struct.is_set_cpu()) {
         optionals.set(2);
       }
-      oprot.writeBitSet(optionals, 3);
+      if (struct.is_set_gpu()) {
+        optionals.set(3);
+      }
+      oprot.writeBitSet(optionals, 4);
       if (struct.is_set_mem_on_heap()) {
         oprot.writeDouble(struct.mem_on_heap);
       }
@@ -580,12 +672,15 @@ public class WorkerResources implements org.apache.thrift.TBase<WorkerResources,
       if (struct.is_set_cpu()) {
         oprot.writeDouble(struct.cpu);
       }
+      if (struct.is_set_gpu()) {
+        oprot.writeDouble(struct.gpu);
+      }
     }
 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, WorkerResources struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(3);
+      BitSet incoming = iprot.readBitSet(4);
       if (incoming.get(0)) {
         struct.mem_on_heap = iprot.readDouble();
         struct.set_mem_on_heap_isSet(true);
@@ -597,6 +692,10 @@ public class WorkerResources implements org.apache.thrift.TBase<WorkerResources,
       if (incoming.get(2)) {
         struct.cpu = iprot.readDouble();
         struct.set_cpu_isSet(true);
+      }
+      if (incoming.get(3)) {
+        struct.gpu = iprot.readDouble();
+        struct.set_gpu_isSet(true);
       }
     }
   }

@@ -81,4 +81,12 @@ public abstract class BaseConfigurationDeclarer<T extends ComponentConfiguration
         }
         return null;
     }
+
+    @Override
+    public T setGPULoad(Number amount) {
+        if(amount != null) {
+            return addConfiguration(Config.TOPOLOGY_COMPONENT_GPU_PERCENT, amount);
+        }
+        return null;
+    }
 }

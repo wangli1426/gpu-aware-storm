@@ -63,11 +63,13 @@ public class DefaultSchedulingPriorityStrategy implements ISchedulingPriorityStr
                 else if (Math.abs(least - userResourcePoolAverageUtilization) < 0.0001) {
                     double currentCpuPercentage = ret.getCPUResourceGuaranteed() / this.cluster.getClusterTotalCPUResource();
                     double currentMemoryPercentage = ret.getMemoryResourceGuaranteed() / this.cluster.getClusterTotalMemoryResource();
-                    double currentAvgPercentage = (currentCpuPercentage + currentMemoryPercentage) / 2.0;
+                    double currentGpuPercentage = ret.getGpuResourceGuaranteed() / this.cluster.getClusterTotalGPUResource();
+                    double currentAvgPercentage = (currentCpuPercentage + currentMemoryPercentage + currentGpuPercentage) / 3.0;
 
                     double userCpuPercentage = user.getCPUResourceGuaranteed() / this.cluster.getClusterTotalCPUResource();
                     double userMemoryPercentage = user.getMemoryResourceGuaranteed() / this.cluster.getClusterTotalMemoryResource();
-                    double userAvgPercentage = (userCpuPercentage + userMemoryPercentage) / 2.0;
+                    double userGpuPercentage = user.getGpuResourceGuaranteed() / this.cluster.getClusterTotalGPUResource();
+                    double userAvgPercentage = (userCpuPercentage + userMemoryPercentage + userGpuPercentage) / 3.0;
                     if (userAvgPercentage > currentAvgPercentage) {
                         ret = user;
                         least = userResourcePoolAverageUtilization;

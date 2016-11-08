@@ -77,6 +77,8 @@ public class TopologyPageInfo implements org.apache.thrift.TBase<TopologyPageInf
   private static final org.apache.thrift.protocol.TField ASSIGNED_MEMONHEAP_FIELD_DESC = new org.apache.thrift.protocol.TField("assigned_memonheap", org.apache.thrift.protocol.TType.DOUBLE, (short)524);
   private static final org.apache.thrift.protocol.TField ASSIGNED_MEMOFFHEAP_FIELD_DESC = new org.apache.thrift.protocol.TField("assigned_memoffheap", org.apache.thrift.protocol.TType.DOUBLE, (short)525);
   private static final org.apache.thrift.protocol.TField ASSIGNED_CPU_FIELD_DESC = new org.apache.thrift.protocol.TField("assigned_cpu", org.apache.thrift.protocol.TType.DOUBLE, (short)526);
+  private static final org.apache.thrift.protocol.TField REQUESTED_GPU_FIELD_DESC = new org.apache.thrift.protocol.TField("requested_gpu", org.apache.thrift.protocol.TType.DOUBLE, (short)527);
+  private static final org.apache.thrift.protocol.TField ASSIGNED_GPU_FIELD_DESC = new org.apache.thrift.protocol.TField("assigned_gpu", org.apache.thrift.protocol.TType.DOUBLE, (short)528);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -106,6 +108,8 @@ public class TopologyPageInfo implements org.apache.thrift.TBase<TopologyPageInf
   private double assigned_memonheap; // optional
   private double assigned_memoffheap; // optional
   private double assigned_cpu; // optional
+  private double requested_gpu; // optional
+  private double assigned_gpu; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -130,7 +134,9 @@ public class TopologyPageInfo implements org.apache.thrift.TBase<TopologyPageInf
     REQUESTED_CPU((short)523, "requested_cpu"),
     ASSIGNED_MEMONHEAP((short)524, "assigned_memonheap"),
     ASSIGNED_MEMOFFHEAP((short)525, "assigned_memoffheap"),
-    ASSIGNED_CPU((short)526, "assigned_cpu");
+    ASSIGNED_CPU((short)526, "assigned_cpu"),
+    REQUESTED_GPU((short)527, "requested_gpu"),
+    ASSIGNED_GPU((short)528, "assigned_gpu");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -189,6 +195,10 @@ public class TopologyPageInfo implements org.apache.thrift.TBase<TopologyPageInf
           return ASSIGNED_MEMOFFHEAP;
         case 526: // ASSIGNED_CPU
           return ASSIGNED_CPU;
+        case 527: // REQUESTED_GPU
+          return REQUESTED_GPU;
+        case 528: // ASSIGNED_GPU
+          return ASSIGNED_GPU;
         default:
           return null;
       }
@@ -240,8 +250,10 @@ public class TopologyPageInfo implements org.apache.thrift.TBase<TopologyPageInf
   private static final int __ASSIGNED_MEMONHEAP_ISSET_ID = 8;
   private static final int __ASSIGNED_MEMOFFHEAP_ISSET_ID = 9;
   private static final int __ASSIGNED_CPU_ISSET_ID = 10;
+  private static final int __REQUESTED_GPU_ISSET_ID = 11;
+  private static final int __ASSIGNED_GPU_ISSET_ID = 12;
   private short __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.NAME,_Fields.UPTIME_SECS,_Fields.STATUS,_Fields.NUM_TASKS,_Fields.NUM_WORKERS,_Fields.NUM_EXECUTORS,_Fields.TOPOLOGY_CONF,_Fields.ID_TO_SPOUT_AGG_STATS,_Fields.ID_TO_BOLT_AGG_STATS,_Fields.SCHED_STATUS,_Fields.TOPOLOGY_STATS,_Fields.OWNER,_Fields.DEBUG_OPTIONS,_Fields.REPLICATION_COUNT,_Fields.WORKERS,_Fields.REQUESTED_MEMONHEAP,_Fields.REQUESTED_MEMOFFHEAP,_Fields.REQUESTED_CPU,_Fields.ASSIGNED_MEMONHEAP,_Fields.ASSIGNED_MEMOFFHEAP,_Fields.ASSIGNED_CPU};
+  private static final _Fields optionals[] = {_Fields.NAME,_Fields.UPTIME_SECS,_Fields.STATUS,_Fields.NUM_TASKS,_Fields.NUM_WORKERS,_Fields.NUM_EXECUTORS,_Fields.TOPOLOGY_CONF,_Fields.ID_TO_SPOUT_AGG_STATS,_Fields.ID_TO_BOLT_AGG_STATS,_Fields.SCHED_STATUS,_Fields.TOPOLOGY_STATS,_Fields.OWNER,_Fields.DEBUG_OPTIONS,_Fields.REPLICATION_COUNT,_Fields.WORKERS,_Fields.REQUESTED_MEMONHEAP,_Fields.REQUESTED_MEMOFFHEAP,_Fields.REQUESTED_CPU,_Fields.ASSIGNED_MEMONHEAP,_Fields.ASSIGNED_MEMOFFHEAP,_Fields.ASSIGNED_CPU,_Fields.REQUESTED_GPU,_Fields.ASSIGNED_GPU};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -293,6 +305,10 @@ public class TopologyPageInfo implements org.apache.thrift.TBase<TopologyPageInf
     tmpMap.put(_Fields.ASSIGNED_MEMOFFHEAP, new org.apache.thrift.meta_data.FieldMetaData("assigned_memoffheap", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.DOUBLE)));
     tmpMap.put(_Fields.ASSIGNED_CPU, new org.apache.thrift.meta_data.FieldMetaData("assigned_cpu", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.DOUBLE)));
+    tmpMap.put(_Fields.REQUESTED_GPU, new org.apache.thrift.meta_data.FieldMetaData("requested_gpu", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.DOUBLE)));
+    tmpMap.put(_Fields.ASSIGNED_GPU, new org.apache.thrift.meta_data.FieldMetaData("assigned_gpu", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.DOUBLE)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(TopologyPageInfo.class, metaDataMap);
@@ -385,6 +401,8 @@ public class TopologyPageInfo implements org.apache.thrift.TBase<TopologyPageInf
     this.assigned_memonheap = other.assigned_memonheap;
     this.assigned_memoffheap = other.assigned_memoffheap;
     this.assigned_cpu = other.assigned_cpu;
+    this.requested_gpu = other.requested_gpu;
+    this.assigned_gpu = other.assigned_gpu;
   }
 
   public TopologyPageInfo deepCopy() {
@@ -426,6 +444,10 @@ public class TopologyPageInfo implements org.apache.thrift.TBase<TopologyPageInf
     this.assigned_memoffheap = 0.0;
     set_assigned_cpu_isSet(false);
     this.assigned_cpu = 0.0;
+    set_requested_gpu_isSet(false);
+    this.requested_gpu = 0.0;
+    set_assigned_gpu_isSet(false);
+    this.assigned_gpu = 0.0;
   }
 
   public String get_id() {
@@ -960,6 +982,50 @@ public class TopologyPageInfo implements org.apache.thrift.TBase<TopologyPageInf
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __ASSIGNED_CPU_ISSET_ID, value);
   }
 
+  public double get_requested_gpu() {
+    return this.requested_gpu;
+  }
+
+  public void set_requested_gpu(double requested_gpu) {
+    this.requested_gpu = requested_gpu;
+    set_requested_gpu_isSet(true);
+  }
+
+  public void unset_requested_gpu() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __REQUESTED_GPU_ISSET_ID);
+  }
+
+  /** Returns true if field requested_gpu is set (has been assigned a value) and false otherwise */
+  public boolean is_set_requested_gpu() {
+    return EncodingUtils.testBit(__isset_bitfield, __REQUESTED_GPU_ISSET_ID);
+  }
+
+  public void set_requested_gpu_isSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __REQUESTED_GPU_ISSET_ID, value);
+  }
+
+  public double get_assigned_gpu() {
+    return this.assigned_gpu;
+  }
+
+  public void set_assigned_gpu(double assigned_gpu) {
+    this.assigned_gpu = assigned_gpu;
+    set_assigned_gpu_isSet(true);
+  }
+
+  public void unset_assigned_gpu() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __ASSIGNED_GPU_ISSET_ID);
+  }
+
+  /** Returns true if field assigned_gpu is set (has been assigned a value) and false otherwise */
+  public boolean is_set_assigned_gpu() {
+    return EncodingUtils.testBit(__isset_bitfield, __ASSIGNED_GPU_ISSET_ID);
+  }
+
+  public void set_assigned_gpu_isSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __ASSIGNED_GPU_ISSET_ID, value);
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case ID:
@@ -1138,6 +1204,22 @@ public class TopologyPageInfo implements org.apache.thrift.TBase<TopologyPageInf
       }
       break;
 
+    case REQUESTED_GPU:
+      if (value == null) {
+        unset_requested_gpu();
+      } else {
+        set_requested_gpu((Double)value);
+      }
+      break;
+
+    case ASSIGNED_GPU:
+      if (value == null) {
+        unset_assigned_gpu();
+      } else {
+        set_assigned_gpu((Double)value);
+      }
+      break;
+
     }
   }
 
@@ -1209,6 +1291,12 @@ public class TopologyPageInfo implements org.apache.thrift.TBase<TopologyPageInf
     case ASSIGNED_CPU:
       return get_assigned_cpu();
 
+    case REQUESTED_GPU:
+      return get_requested_gpu();
+
+    case ASSIGNED_GPU:
+      return get_assigned_gpu();
+
     }
     throw new IllegalStateException();
   }
@@ -1264,6 +1352,10 @@ public class TopologyPageInfo implements org.apache.thrift.TBase<TopologyPageInf
       return is_set_assigned_memoffheap();
     case ASSIGNED_CPU:
       return is_set_assigned_cpu();
+    case REQUESTED_GPU:
+      return is_set_requested_gpu();
+    case ASSIGNED_GPU:
+      return is_set_assigned_gpu();
     }
     throw new IllegalStateException();
   }
@@ -1479,6 +1571,24 @@ public class TopologyPageInfo implements org.apache.thrift.TBase<TopologyPageInf
         return false;
     }
 
+    boolean this_present_requested_gpu = true && this.is_set_requested_gpu();
+    boolean that_present_requested_gpu = true && that.is_set_requested_gpu();
+    if (this_present_requested_gpu || that_present_requested_gpu) {
+      if (!(this_present_requested_gpu && that_present_requested_gpu))
+        return false;
+      if (this.requested_gpu != that.requested_gpu)
+        return false;
+    }
+
+    boolean this_present_assigned_gpu = true && this.is_set_assigned_gpu();
+    boolean that_present_assigned_gpu = true && that.is_set_assigned_gpu();
+    if (this_present_assigned_gpu || that_present_assigned_gpu) {
+      if (!(this_present_assigned_gpu && that_present_assigned_gpu))
+        return false;
+      if (this.assigned_gpu != that.assigned_gpu)
+        return false;
+    }
+
     return true;
   }
 
@@ -1595,6 +1705,16 @@ public class TopologyPageInfo implements org.apache.thrift.TBase<TopologyPageInf
     list.add(present_assigned_cpu);
     if (present_assigned_cpu)
       list.add(assigned_cpu);
+
+    boolean present_requested_gpu = true && (is_set_requested_gpu());
+    list.add(present_requested_gpu);
+    if (present_requested_gpu)
+      list.add(requested_gpu);
+
+    boolean present_assigned_gpu = true && (is_set_assigned_gpu());
+    list.add(present_assigned_gpu);
+    if (present_assigned_gpu)
+      list.add(assigned_gpu);
 
     return list.hashCode();
   }
@@ -1827,6 +1947,26 @@ public class TopologyPageInfo implements org.apache.thrift.TBase<TopologyPageInf
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(is_set_requested_gpu()).compareTo(other.is_set_requested_gpu());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (is_set_requested_gpu()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.requested_gpu, other.requested_gpu);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(is_set_assigned_gpu()).compareTo(other.is_set_assigned_gpu());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (is_set_assigned_gpu()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.assigned_gpu, other.assigned_gpu);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -2018,6 +2158,18 @@ public class TopologyPageInfo implements org.apache.thrift.TBase<TopologyPageInf
       if (!first) sb.append(", ");
       sb.append("assigned_cpu:");
       sb.append(this.assigned_cpu);
+      first = false;
+    }
+    if (is_set_requested_gpu()) {
+      if (!first) sb.append(", ");
+      sb.append("requested_gpu:");
+      sb.append(this.requested_gpu);
+      first = false;
+    }
+    if (is_set_assigned_gpu()) {
+      if (!first) sb.append(", ");
+      sb.append("assigned_gpu:");
+      sb.append(this.assigned_gpu);
       first = false;
     }
     sb.append(")");
@@ -2290,6 +2442,22 @@ public class TopologyPageInfo implements org.apache.thrift.TBase<TopologyPageInf
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 527: // REQUESTED_GPU
+            if (schemeField.type == org.apache.thrift.protocol.TType.DOUBLE) {
+              struct.requested_gpu = iprot.readDouble();
+              struct.set_requested_gpu_isSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 528: // ASSIGNED_GPU
+            if (schemeField.type == org.apache.thrift.protocol.TType.DOUBLE) {
+              struct.assigned_gpu = iprot.readDouble();
+              struct.set_assigned_gpu_isSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -2456,6 +2624,16 @@ public class TopologyPageInfo implements org.apache.thrift.TBase<TopologyPageInf
         oprot.writeDouble(struct.assigned_cpu);
         oprot.writeFieldEnd();
       }
+      if (struct.is_set_requested_gpu()) {
+        oprot.writeFieldBegin(REQUESTED_GPU_FIELD_DESC);
+        oprot.writeDouble(struct.requested_gpu);
+        oprot.writeFieldEnd();
+      }
+      if (struct.is_set_assigned_gpu()) {
+        oprot.writeFieldBegin(ASSIGNED_GPU_FIELD_DESC);
+        oprot.writeDouble(struct.assigned_gpu);
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -2538,7 +2716,13 @@ public class TopologyPageInfo implements org.apache.thrift.TBase<TopologyPageInf
       if (struct.is_set_assigned_cpu()) {
         optionals.set(20);
       }
-      oprot.writeBitSet(optionals, 21);
+      if (struct.is_set_requested_gpu()) {
+        optionals.set(21);
+      }
+      if (struct.is_set_assigned_gpu()) {
+        optionals.set(22);
+      }
+      oprot.writeBitSet(optionals, 23);
       if (struct.is_set_name()) {
         oprot.writeString(struct.name);
       }
@@ -2622,6 +2806,12 @@ public class TopologyPageInfo implements org.apache.thrift.TBase<TopologyPageInf
       if (struct.is_set_assigned_cpu()) {
         oprot.writeDouble(struct.assigned_cpu);
       }
+      if (struct.is_set_requested_gpu()) {
+        oprot.writeDouble(struct.requested_gpu);
+      }
+      if (struct.is_set_assigned_gpu()) {
+        oprot.writeDouble(struct.assigned_gpu);
+      }
     }
 
     @Override
@@ -2629,7 +2819,7 @@ public class TopologyPageInfo implements org.apache.thrift.TBase<TopologyPageInf
       TTupleProtocol iprot = (TTupleProtocol) prot;
       struct.id = iprot.readString();
       struct.set_id_isSet(true);
-      BitSet incoming = iprot.readBitSet(21);
+      BitSet incoming = iprot.readBitSet(23);
       if (incoming.get(0)) {
         struct.name = iprot.readString();
         struct.set_name_isSet(true);
@@ -2749,6 +2939,14 @@ public class TopologyPageInfo implements org.apache.thrift.TBase<TopologyPageInf
       if (incoming.get(20)) {
         struct.assigned_cpu = iprot.readDouble();
         struct.set_assigned_cpu_isSet(true);
+      }
+      if (incoming.get(21)) {
+        struct.requested_gpu = iprot.readDouble();
+        struct.set_requested_gpu_isSet(true);
+      }
+      if (incoming.get(22)) {
+        struct.assigned_gpu = iprot.readDouble();
+        struct.set_assigned_gpu_isSet(true);
       }
     }
   }

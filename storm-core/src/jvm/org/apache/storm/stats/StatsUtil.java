@@ -1302,10 +1302,12 @@ public class StatsUtil {
                             ws.set_assigned_memonheap(resources.get_mem_on_heap());
                             ws.set_assigned_memoffheap(resources.get_mem_off_heap());
                             ws.set_assigned_cpu(resources.get_cpu());
+                            ws.set_assigned_gpu(resources.get_gpu());
                         } else {
                             ws.set_assigned_memonheap(0);
                             ws.set_assigned_memoffheap(0);
                             ws.set_assigned_cpu(0);
+                            ws.set_assigned_gpu(0);
                         }
                         ws.set_component_to_num_tasks(new HashMap<String,Long>());
                         workerSummaryMap.put(slot, ws);

@@ -337,6 +337,19 @@ public class TopologyDetails {
     }
 
     /**
+     * Get the total GPU requirement for executor
+     * @return Double the total about of gpu requirement for executor
+     */
+    public Double getTotalGpuReqTask(ExecutorDetails exec) {
+        if (hasExecInTopo(exec)) {
+            return this.resourceList
+                    .get(exec)
+                    .get(Config.TOPOLOGY_COMPONENT_GPU_PERCENT);
+        }
+        return null;
+    }
+
+    /**
      * Note: The public API relevant to resource aware scheduling is unstable as of May 2015.
      *       We reserve the right to change them.
      *
@@ -388,6 +401,23 @@ public class TopologyDetails {
     }
 
     /**
+     * Note: The public API relevant to resource aware scheduling is unstable as of May 2015.
+     *       We reserve the right to change them.
+     *
+     * @return the total cpu requested for this topology
+     */
+    public Double getTotalRequestedGpu() {
+        Double total_gpu = 0.0;
+        for (ExecutorDetails exec : this.getExecutors()) {
+            Double exec_gpu = getTotalGpuReqTask(exec);
+            if (exec_gpu != null) {
+                total_gpu += exec_gpu;
+            }
+        }
+        return total_gpu;
+    }
+
+    /**
      * get the resources requirements for a executor
      * @param exec
      * @return a map containing the resource requirements for this exec
@@ -423,22 +453,26 @@ public class TopologyDetails {
      */
     private void addDefaultResforExec(ExecutorDetails exec) {
         Double topologyComponentCpuPcorePercent = Utils.getDouble(this.topologyConf.get(Config.TOPOLOGY_COMPONENT_CPU_PCORE_PERCENT), null);
+        Double topologyComponentGpuPercent = Utils.getDouble(this.topologyConf.get(Config.TOPOLOGY_COMPONENT_GPU_PERCENT), null);
         Double topologyComponentResourcesOffheapMemoryMb = Utils.getDouble(this.topologyConf.get(Config.TOPOLOGY_COMPONENT_RESOURCES_OFFHEAP_MEMORY_MB), null);
         Double topologyComponentResourcesOnheapMemoryMb = Utils.getDouble(this.topologyConf.get(Config.TOPOLOGY_COMPONENT_RESOURCES_ONHEAP_MEMORY_MB), null);
 
         assert topologyComponentCpuPcorePercent != null;
         assert topologyComponentResourcesOffheapMemoryMb != null;
         assert topologyComponentResourcesOnheapMemoryMb != null;
+        assert topologyComponentGpuPercent != null;
 
         Map<String, Double> defaultResourceList = new HashMap<>();
         defaultResourceList.put(Config.TOPOLOGY_COMPONENT_CPU_PCORE_PERCENT, topologyComponentCpuPcorePercent);
+        defaultResourceList.put(Config.TOPOLOGY_COMPONENT_GPU_PERCENT, topologyComponentGpuPercent);
         defaultResourceList.put(Config.TOPOLOGY_COMPONENT_RESOURCES_OFFHEAP_MEMORY_MB, topologyComponentResourcesOffheapMemoryMb);
         defaultResourceList.put(Config.TOPOLOGY_COMPONENT_RESOURCES_ONHEAP_MEMORY_MB, topologyComponentResourcesOnheapMemoryMb);
         LOG.debug("Scheduling Executor: {} with memory requirement as onHeap: {} - offHeap: {} " +
-                        "and CPU requirement: {}",
+                        "CPU requirement: {} GPU requirement: {}",
                 exec, this.topologyConf.get(Config.TOPOLOGY_COMPONENT_RESOURCES_ONHEAP_MEMORY_MB),
                 this.topologyConf.get(Config.TOPOLOGY_COMPONENT_RESOURCES_OFFHEAP_MEMORY_MB),
-                this.topologyConf.get(Config.TOPOLOGY_COMPONENT_CPU_PCORE_PERCENT));
+                this.topologyConf.get(Config.TOPOLOGY_COMPONENT_CPU_PCORE_PERCENT),
+                this.topologyConf.get(Config.TOPOLOGY_COMPONENT_GPU_PERCENT));
         addResourcesForExec(exec, defaultResourceList);
     }
 

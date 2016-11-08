@@ -390,14 +390,18 @@
                                (for [^SupervisorSummary s sups
                                      :let [sup-total-mem (get (.get_total_resources s) Config/SUPERVISOR_MEMORY_CAPACITY_MB)
                                            sup-total-cpu (get (.get_total_resources s) Config/SUPERVISOR_CPU_CAPACITY)
+                                           sup-total-gpu (get (.get_total_resources s) Config/SUPERVISOR_GPU_CAPACITY)
                                            sup-avail-mem (max (- sup-total-mem (.get_used_mem s)) 0.0)
-                                           sup-avail-cpu (max (- sup-total-cpu (.get_used_cpu s)) 0.0)]]
-                                 [sup-total-mem sup-total-cpu sup-avail-mem sup-avail-cpu]))
-                             [0.0 0.0 0.0 0.0])
+                                           sup-avail-cpu (max (- sup-total-cpu (.get_used_cpu s)) 0.0)
+                                           sup-avail-gpu (max (- sup-total-gpu (.get_used_gpu s)) 0.0)]]
+                                 [sup-total-mem sup-total-cpu sup-total-gpu sup-avail-mem sup-avail-cpu sup-avail-gpu]))
+                             [0.0 0.0 0.0 0.0 0.0 0.0])
            total-mem (nth resourceSummary 0)
            total-cpu (nth resourceSummary 1)
-           avail-mem (nth resourceSummary 2)
-           avail-cpu (nth resourceSummary 3)]
+           total-gpu (nth resourceSummary 2)
+           avail-mem (nth resourceSummary 3)
+           avail-cpu (nth resourceSummary 4)
+           avail-gpu (nth resourceSummary 5)]
        {"user" user
         "stormVersion" STORM-VERSION
         "supervisors" (count sups)
@@ -410,10 +414,13 @@
         "schedulerDisplayResource" (*STORM-CONF* Config/SCHEDULER_DISPLAY_RESOURCE)
         "totalMem" total-mem
         "totalCpu" total-cpu
+        "totalGpu" total-gpu
         "availMem" avail-mem
         "availCpu" avail-cpu
+        "availGpu" avail-gpu
         "memAssignedPercentUtil" (if (and (not (nil? total-mem)) (> total-mem 0.0)) (format "%.1f" (* (/ (- total-mem avail-mem) total-mem) 100.0)) 0.0)
-        "cpuAssignedPercentUtil" (if (and (not (nil? total-cpu)) (> total-cpu 0.0)) (format "%.1f" (* (/ (- total-cpu avail-cpu) total-cpu) 100.0)) 0.0)})))
+        "cpuAssignedPercentUtil" (if (and (not (nil? total-cpu)) (> total-cpu 0.0)) (format "%.1f" (* (/ (- total-cpu avail-cpu) total-cpu) 100.0)) 0.0)
+        "gpuAssignedPercentUtil" (if (and (not (nil? total-gpu)) (> total-gpu 0.0)) (format "%.1f" (* (/ (- total-gpu avail-gpu) total-gpu) 100.0)) 0.0)})))
 
 (defn convert-to-nimbus-summary[nimbus-seed]
   (let [[host port] (.split nimbus-seed ":")]
@@ -465,6 +472,7 @@
      "assignedMemOnHeap" (.get_assigned_memonheap worker-summary)
      "assignedMemOffHeap" (.get_assigned_memoffheap worker-summary)
      "assignedCpu" (.get_assigned_cpu worker-summary)
+     "assignedGpu" (.get_assigned_gpu worker-summary)
      "componentNumTasks" (.get_component_to_num_tasks worker-summary)
      "uptime" (UIHelpers/prettyUptimeSec uptime-secs)
      "uptimeSeconds" uptime-secs
@@ -477,10 +485,13 @@
         slotsFree (max (- slotsTotal slotsUsed) 0)
         totalMem (get (.get_total_resources summary) Config/SUPERVISOR_MEMORY_CAPACITY_MB)
         totalCpu (get (.get_total_resources summary) Config/SUPERVISOR_CPU_CAPACITY)
+        totalGpu (get (.get_total_resources summary) Config/SUPERVISOR_GPU_CAPACITY)
         usedMem (.get_used_mem summary)
         usedCpu (.get_used_cpu summary)
+        usedGpu (.get_used_gpu summary)
         availMem (max (- totalMem usedMem) 0)
-        availCpu (max (- totalCpu usedCpu) 0)]
+        availCpu (max (- totalCpu usedCpu) 0)
+        availGpu (max (- totalGpu usedGpu) 0)]
   {"id" (.get_supervisor_id summary)
    "host" (.get_host summary)
    "uptime" (UIHelpers/prettyUptimeSec (.get_uptime_secs summary))
@@ -490,11 +501,14 @@
    "slotsFree" slotsFree
    "totalMem" totalMem
    "totalCpu" totalCpu
+   "totalGpu" totalGpu
    "usedMem" usedMem
    "usedCpu" usedCpu
+   "usedGpu" usedGpu
    "logLink" (supervisor-log-link (.get_host summary))
    "availMem" availMem
    "availCpu" availCpu
+   "availGpu" availGpu
    "version" (.get_version summary)}))
 
 (defn supervisor-page-info
@@ -549,10 +563,12 @@
        "requestedMemOffHeap" (.get_requested_memoffheap t)
        "requestedTotalMem" (+ (.get_requested_memonheap t) (.get_requested_memoffheap t))
        "requestedCpu" (.get_requested_cpu t)
+       "requestedGpu" (.get_requested_gpu t)
        "assignedMemOnHeap" (.get_assigned_memonheap t)
        "assignedMemOffHeap" (.get_assigned_memoffheap t)
        "assignedTotalMem" (+ (.get_assigned_memonheap t) (.get_assigned_memoffheap t))
-       "assignedCpu" (.get_assigned_cpu t)})
+       "assignedCpu" (.get_assigned_cpu t)
+       "assignedGpu" (.get_assigned_gpu t)})
     "schedulerDisplayResource" (*STORM-CONF* Config/SCHEDULER_DISPLAY_RESOURCE)}))
 
 (defn topology-stats [window stats]
@@ -616,7 +632,8 @@
    "failed" (.get_failed common-stats)
    "requestedMemOnHeap" (.get (.get_resources_map common-stats) Config/TOPOLOGY_COMPONENT_RESOURCES_ONHEAP_MEMORY_MB)
    "requestedMemOffHeap" (.get (.get_resources_map common-stats) Config/TOPOLOGY_COMPONENT_RESOURCES_OFFHEAP_MEMORY_MB)
-   "requestedCpu" (.get (.get_resources_map common-stats) Config/TOPOLOGY_COMPONENT_CPU_PCORE_PERCENT)})
+   "requestedCpu" (.get (.get_resources_map common-stats) Config/TOPOLOGY_COMPONENT_CPU_PCORE_PERCENT)
+   "requestedGpu" (.get (.get_resources_map common-stats) Config/TOPOLOGY_COMPONENT_GPU_PERCENT)})
 
 (defmulti comp-agg-stats-json
   "Returns a JSON representation of aggregated statistics."
@@ -678,10 +695,12 @@
      "requestedMemOnHeap" (.get_requested_memonheap topo-info)
      "requestedMemOffHeap" (.get_requested_memoffheap topo-info)
      "requestedCpu" (.get_requested_cpu topo-info)
+     "requestedGpu" (.get_requested_gpu topo-info)
      "assignedMemOnHeap" (.get_assigned_memonheap topo-info)
      "assignedMemOffHeap" (.get_assigned_memoffheap topo-info)
      "assignedTotalMem" (+ (.get_assigned_memonheap topo-info) (.get_assigned_memoffheap topo-info))
      "assignedCpu" (.get_assigned_cpu topo-info)
+     "assignedGpu" (.get_assigned_gpu topo-info)
      "topologyStats" topo-stats
      "workers"  (map (partial worker-summary-to-json secure?)
                      (.get_workers topo-info))
@@ -1042,6 +1061,7 @@
        "requestedMemOnHeap" (.get (.get_resources_map comp-page-info) Config/TOPOLOGY_COMPONENT_RESOURCES_ONHEAP_MEMORY_MB)
        "requestedMemOffHeap" (.get (.get_resources_map comp-page-info) Config/TOPOLOGY_COMPONENT_RESOURCES_OFFHEAP_MEMORY_MB)
        "requestedCpu" (.get (.get_resources_map comp-page-info) Config/TOPOLOGY_COMPONENT_CPU_PCORE_PERCENT)
+       "requestedGpu" (.get (.get_resources_map comp-page-info) Config/TOPOLOGY_COMPONENT_GPU_PERCENT)
        "schedulerDisplayResource" (*STORM-CONF* Config/SCHEDULER_DISPLAY_RESOURCE)
        "topologyId" topology-id
        "topologyStatus" (.get_topology_status comp-page-info)

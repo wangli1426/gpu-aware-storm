@@ -163,6 +163,8 @@ struct TopologySummary {
 524: optional double assigned_memonheap;
 525: optional double assigned_memoffheap;
 526: optional double assigned_cpu;
+527: optional double requested_gpu;
+528: optional double assigned_gpu;
 }
 
 struct SupervisorSummary {
@@ -175,6 +177,7 @@ struct SupervisorSummary {
   7: optional map<string, double> total_resources;
   8: optional double used_mem;
   9: optional double used_cpu;
+  10: optional double used_gpu;
 }
 
 struct NimbusSummary {
@@ -264,6 +267,8 @@ struct TopologyInfo {
 524: optional double assigned_memonheap;
 525: optional double assigned_memoffheap;
 526: optional double assigned_cpu;
+527: optional double requested_gpu;
+528: optional double assigned_gpu;
 }
 
 struct CommonAggregateStats {
@@ -328,6 +333,8 @@ struct WorkerSummary {
 524: optional double assigned_memonheap;
 525: optional double assigned_memoffheap;
 526: optional double assigned_cpu;
+527: optional double requested_gpu;
+528: optional double assigned_gpu;
 }
 
 struct SupervisorPageInfo {
@@ -358,6 +365,8 @@ struct TopologyPageInfo {
 524: optional double assigned_memonheap;
 525: optional double assigned_memoffheap;
 526: optional double assigned_cpu;
+527: optional double requested_gpu;
+528: optional double assigned_gpu;
 }
 
 struct ExecutorAggregateStats {
@@ -464,6 +473,7 @@ struct WorkerResources {
     1: optional double mem_on_heap;
     2: optional double mem_off_heap;
     3: optional double cpu;
+    4: optional double gpu;
 }
 struct Assignment {
     1: required string master_code_dir;

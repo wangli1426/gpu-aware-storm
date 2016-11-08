@@ -200,6 +200,7 @@ public class TridentTopologyBuilder {
         Number onHeap = masterCoordResources.get(Config.TOPOLOGY_COMPONENT_RESOURCES_ONHEAP_MEMORY_MB);
         Number offHeap = masterCoordResources.get(Config.TOPOLOGY_COMPONENT_RESOURCES_OFFHEAP_MEMORY_MB);
         Number cpuLoad = masterCoordResources.get(Config.TOPOLOGY_COMPONENT_CPU_PCORE_PERCENT);
+        Number gpuLoad = masterCoordResources.get(Config.TOPOLOGY_COMPONENT_GPU_PERCENT);
 
         for(String batch: batchesToCommitIds.keySet()) {
             List<String> commitIds = batchesToCommitIds.get(batch);
@@ -216,6 +217,10 @@ public class TridentTopologyBuilder {
 
             if(cpuLoad != null) {
                 masterCoord.setCPULoad(cpuLoad);
+            }
+
+            if(gpuLoad != null) {
+                masterCoord.setGPULoad(gpuLoad);
             }
         }
                 

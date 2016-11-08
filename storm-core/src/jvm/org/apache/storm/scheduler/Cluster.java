@@ -505,6 +505,17 @@ public class Cluster {
         return sum;
     }
 
+    /**
+     * Get the total amount of GPU resources in cluster
+     */
+    public double getClusterTotalGPUResource() {
+        double sum = 0.0;
+        for (SupervisorDetails sup : this.supervisors.values()) {
+            sum += sup.getTotalGPU();
+        }
+        return sum;
+    }
+
     /*
     * Note: Make sure the proper conf was passed into the Cluster constructor before calling this function
     * It tries to load the proper network topography detection plugin specified in the config.
@@ -645,7 +656,7 @@ public class Cluster {
                     Double[] worker_resources = workerResources.get(ws);
                     worker_resources[0] = assignedMemPerSlot;
                 } else {
-                    Double[] worker_resources = {assignedMemPerSlot, 0.0, 0.0};
+                    Double[] worker_resources = {assignedMemPerSlot, 0.0, 0.0, 0.0};
                     workerResources.put(ws, worker_resources);
                 }
 
@@ -659,7 +670,7 @@ public class Cluster {
                 Double[] topo_resources = topologyResources.get(topId);
                 topo_resources[3] = assignedMemForTopology;
             } else {
-                Double[] topo_resources = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+                Double[] topo_resources = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
                 topo_resources[3] = assignedMemForTopology;
                 this.setTopologyResources(topId, topo_resources);
             }
@@ -671,7 +682,7 @@ public class Cluster {
                 Double[] supervisor_resources = supervisorsResources.get(nodeId);
                 supervisor_resources[2] = entry.getValue();
             } else {
-                Double[] supervisor_resources = {0.0, 0.0, 0.0, 0.0};
+                Double[] supervisor_resources = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
                 supervisor_resources[2] = entry.getValue();
                 this.supervisorsResources.put(nodeId, supervisor_resources);
             }
@@ -710,7 +721,7 @@ public class Cluster {
                     Double[] worker_resources = workerResources.get(ws);
                     worker_resources[2] = PER_WORKER_CPU_SWAG;
                 } else {
-                    Double[] worker_resources = {0.0, 0.0, PER_WORKER_CPU_SWAG};
+                    Double[] worker_resources = {0.0, 0.0, PER_WORKER_CPU_SWAG, 0.0};
                     workerResources.put(ws, worker_resources);
                 }
 
@@ -727,7 +738,7 @@ public class Cluster {
                 Double[] topo_resources = getTopologyResourcesMap().get(topId);
                 topo_resources[5] = assignedCpuForTopology;
             } else {
-                Double[] topo_resources = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+                Double[] topo_resources = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
                 topo_resources[5] = assignedCpuForTopology;
                 setTopologyResources(topId, topo_resources);
             }
@@ -739,7 +750,7 @@ public class Cluster {
                 Double[] supervisor_resources = supervisorsResources.get(nodeId);
                 supervisor_resources[3] = entry.getValue();
             } else {
-                Double[] supervisor_resources = {0.0, 0.0, 0.0, 0.0};
+                Double[] supervisor_resources = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
                 supervisor_resources[3] = entry.getValue();
                 supervisorsResources.put(nodeId, supervisor_resources);
             }

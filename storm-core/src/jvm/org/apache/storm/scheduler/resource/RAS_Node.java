@@ -58,6 +58,7 @@ public class RAS_Node {
     private SupervisorDetails _sup;
     private Double _availMemory = 0.0;
     private Double _availCPU = 0.0;
+    private Double _availGPU = 0.0;
     private final Cluster _cluster;
     private final Topologies _topologies;
 
@@ -89,6 +90,7 @@ public class RAS_Node {
             _sup = sup;
             _availMemory = getTotalMemoryResources();
             _availCPU = getTotalCpuResources();
+            _availGPU = getTotalGpuResources();
             //intialize resource usages on node
             intializeResources();
         }
@@ -229,8 +231,10 @@ public class RAS_Node {
 
         double memUsed = getMemoryUsedByWorker(ws);
         double cpuUsed = getCpuUsedByWorker(ws);
+        double gpuUsed = getGpuUsedByWorker(ws);
         freeMemory(memUsed);
         freeCPU(cpuUsed);
+        freeGPU(gpuUsed);
 
         //free slot
         _cluster.freeSlot(ws);
@@ -254,6 +258,15 @@ public class RAS_Node {
             return;
         }
         _availCPU += amount;
+    }
+
+    private void freeGPU(double amount) {
+        LOG.debug("freeing {} GPU on node...avail GPU: {}", amount, getHostname(), _availGPU);
+        if ((_availGPU + amount) > getTotalGpuResources()) {
+            LOG.warn("Freeing more GPU than there exists! GPU trying to free: {} Total GPU on Node: {}", (_availGPU + amount), getTotalGpuResources());
+            return;
+        }
+        _availGPU += amount;
     }
 
     /**
@@ -286,6 +299,22 @@ public class RAS_Node {
             totalCpuUsed += topo.getTotalCpuReqTask(exec);
         }
         return totalCpuUsed;
+    }
+
+    /**
+     * get the amount of gpu used by a worker
+     */
+    public double getGpuUsedByWorker(WorkerSlot ws) {
+        TopologyDetails topo = findTopologyUsingWorker(ws);
+        if (topo == null) {
+            return 0.0;
+        }
+        Collection<ExecutorDetails> execs = getExecutors(ws, _cluster);
+        double totalGpuUsed = 0.0;
+        for (ExecutorDetails exec : execs) {
+            totalGpuUsed += topo.getTotalGpuReqTask(exec);
+        }
+        return totalGpuUsed;
     }
 
     /**
@@ -362,7 +391,8 @@ public class RAS_Node {
                 + ", Avail [ Mem: " + ((_availMemory == null) ? "N/A" : _availMemory.toString())
                 + ", CPU: " + ((_availCPU == null) ? "N/A" : _availCPU.toString()) + ", Slots: " + this.getFreeSlots()
                 + "] Total [ Mem: " + ((_sup == null) ? "N/A" : this.getTotalMemoryResources())
-                + ", CPU: " + ((_sup == null) ? "N/A" : this.getTotalCpuResources()) + ", Slots: "
+                + ", CPU: " + ((_sup == null) ? "N/A" : this.getTotalCpuResources())
+                + ", GPU: " + ((_sup == null) ? "N/A" : this.getTotalGpuResources()) + ", Slots: "
                 + this._slots.values() + " ]}";
     }
 
@@ -504,6 +534,43 @@ public class RAS_Node {
     }
 
     /**
+     * Gets the available gpu resources for this node
+     * @return the available gpu for this node
+     */
+    public Double getAvailableGpuResources() {
+        if (_availGPU == null) {
+            return 0.0;
+        }
+        return _availGPU;
+    }
+
+    /**
+     * Gets the total gpu resources for this node
+     * @return the total gpu for this nodee
+     */
+    public Double getTotalGpuResources() {
+        if (_sup != null && _sup.getTotalGPU() != null) {
+            return _sup.getTotalGPU();
+        } else {
+            return 0.0;
+        }
+    }
+
+    /**
+     * Consumes a certain amount of gpu for this node
+     * @param amount is the amount gpu to consume from this node
+     * @return the current available gpu for this node after consumption
+     */
+    public Double consumeGPU(Double amount) {
+        if (amount > _availGPU) {
+            LOG.error("Attempting to consume more GPU than available! Needed: {}, we only have: {}", amount, _availGPU);
+            throw new IllegalStateException("Attempting to consume more GPU than available");
+        }
+        _availGPU = _availGPU - amount;
+        return _availGPU;
+    }
+
+    /**
      * Consumes a certain amount of resources for a executor in a topology.
      * @param exec is the executor that is consuming resources on this node
      * @param topo the topology the executor is a part
@@ -511,8 +578,10 @@ public class RAS_Node {
     public void consumeResourcesforTask(ExecutorDetails exec, TopologyDetails topo) {
         Double taskMemReq = topo.getTotalMemReqTask(exec);
         Double taskCpuReq = topo.getTotalCpuReqTask(exec);
+        Double taskGpuReq = topo.getTotalGpuReqTask(exec);
         consumeCPU(taskCpuReq);
         consumeMemory(taskMemReq);
+        consumeGPU(taskGpuReq);
     }
 
     /**
@@ -523,7 +592,9 @@ public class RAS_Node {
     public void freeResourcesForTask(ExecutorDetails exec, TopologyDetails topo) {
         Double taskMemReq = topo.getTotalMemReqTask(exec);
         Double taskCpuReq = topo.getTotalCpuReqTask(exec);
+        Double taskGpuReq = topo.getTotalGpuReqTask(exec);
         freeCPU(taskCpuReq);
         freeMemory(taskMemReq);
+        freeGPU(taskCpuReq);
     }
 }

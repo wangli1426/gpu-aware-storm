@@ -139,10 +139,11 @@ public class DefaultResourceAwareStrategy implements IStrategy {
             schedulerAssignmentMap.get(targetSlot).add(exec);
             targetNode.consumeResourcesforTask(exec, td);
             scheduledTasks.add(exec);
-            LOG.debug("TASK {} assigned to Node: {} avail [ mem: {} cpu: {} ] total [ mem: {} cpu: {} ] on slot: {} on Rack: {}", exec,
+            LOG.debug("TASK {} assigned to Node: {} avail [ mem: {} cpu: {} gpu: {} ] total [ mem: {} cpu: {} gpu {} ] on slot: {} on Rack: {}", exec,
                     targetNode.getHostname(), targetNode.getAvailableMemoryResources(),
-                    targetNode.getAvailableCpuResources(), targetNode.getTotalMemoryResources(),
-                    targetNode.getTotalCpuResources(), targetSlot, nodeToRack(targetNode));
+                    targetNode.getAvailableCpuResources(), targetNode.getAvailableGpuResources(),
+                    targetNode.getTotalMemoryResources(), targetNode.getTotalCpuResources(),
+                    targetNode.getAvailableGpuResources(), targetSlot, nodeToRack(targetNode));
         } else {
             LOG.error("Not Enough Resources to schedule Task {}", exec);
         }
@@ -194,9 +195,11 @@ public class DefaultResourceAwareStrategy implements IStrategy {
 
         double taskMem = td.getTotalMemReqTask(exec);
         double taskCPU = td.getTotalCpuReqTask(exec);
+        double taskGPU = td.getTotalGpuReqTask(exec);
         for (ObjectResources nodeResources : sortedNodes) {
             RAS_Node n = _nodes.getNodeById(nodeResources.id);
-            if (n.getAvailableCpuResources() >= taskCPU && n.getAvailableMemoryResources() >= taskMem && n.getFreeSlots().size() > 0) {
+            if (n.getAvailableCpuResources() >= taskCPU && n.getAvailableMemoryResources() >= taskMem
+                    && n.getAvailableGpuResources() >= taskGPU && n.getFreeSlots().size() > 0) {
                 for (WorkerSlot ws : n.getFreeSlots()) {
                     if (checkWorkerConstraints(exec, ws, td, scheduleAssignmentMap)) {
                         return ws;
@@ -223,6 +226,8 @@ public class DefaultResourceAwareStrategy implements IStrategy {
         double totalMemResourcesOverall = 0.0;
         double availCpuResourcesOverall = 0.0;
         double totalCpuResourcesOverall = 0.0;
+        double availGpuResourcesOverall = 0.0;
+        double totalGpuResourcesOverall = 0.0;
         String identifier;
 
         public AllResources(String identifier) {
@@ -239,6 +244,8 @@ public class DefaultResourceAwareStrategy implements IStrategy {
         double totalMem = 0.0;
         double availCpu = 0.0;
         double totalCpu = 0.0;
+        double availGpu = 0.0;
+        double totalGpu = 0.0;
         double effectiveResources = 0.0;
 
         public ObjectResources(String id) {
@@ -356,24 +363,30 @@ public class DefaultResourceAwareStrategy implements IStrategy {
                 RAS_Node node = _nodes.getNodeById(this.NodeHostnameToId(nodeId));
                 double availMem = node.getAvailableMemoryResources();
                 double availCpu = node.getAvailableCpuResources();
+                double availGpu = node.getAvailableGpuResources();
                 double totalMem = node.getTotalMemoryResources();
                 double totalCpu = node.getTotalCpuResources();
+                double totalGpu = node.getTotalGpuResources();
 
                 rack.availMem += availMem;
                 rack.totalMem += totalMem;
                 rack.availCpu += availCpu;
                 rack.totalCpu += totalCpu;
+                rack.availGpu += availGpu;
+                rack.totalGpu += totalGpu;
                 nodeIdToRackId.put(nodeId, rack.id);
 
                 allResources.availMemResourcesOverall += availMem;
                 allResources.availCpuResourcesOverall += availCpu;
+                allResources.availGpuResourcesOverall += totalGpu;
 
                 allResources.totalMemResourcesOverall += totalMem;
                 allResources.totalCpuResourcesOverall += totalCpu;
+                allResources.totalGpuResourcesOverall += totalGpu;
             }
         }
-        LOG.debug("Cluster Overall Avail [ CPU {} MEM {} ] Total [ CPU {} MEM {} ]",
-                allResources.availCpuResourcesOverall, allResources.availMemResourcesOverall, allResources.totalCpuResourcesOverall, allResources.totalMemResourcesOverall);
+        LOG.debug("Cluster Overall Avail [ CPU {} MEM {} GPU {} ] Total [ CPU {} MEM {} GPU {} ]",
+                allResources.availCpuResourcesOverall, allResources.availMemResourcesOverall, allResources.availGpuResourcesOverall, allResources.totalCpuResourcesOverall, allResources.totalMemResourcesOverall, allResources.totalGpuResourcesOverall);
 
         return sortObjectResources(allResources, new ExistingScheduleFunc() {
             @Override

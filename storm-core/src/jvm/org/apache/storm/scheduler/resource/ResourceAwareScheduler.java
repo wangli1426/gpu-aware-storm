@@ -240,9 +240,11 @@ public class ResourceAwareScheduler implements IScheduler {
             double requestedMemOnHeap = td.getTotalRequestedMemOnHeap();
             double requestedMemOffHeap = td.getTotalRequestedMemOffHeap();
             double requestedCpu = td.getTotalRequestedCpu();
+            double requestedGpu = td.getTotalRequestedGpu();
             double assignedMemOnHeap = 0.0;
             double assignedMemOffHeap = 0.0;
             double assignedCpu = 0.0;
+            double assignedGpu = 0.0;
 
             Map<WorkerSlot, Double[]> workerResources = new HashMap<WorkerSlot, Double[]>();
 
@@ -268,19 +270,21 @@ public class ResourceAwareScheduler implements IScheduler {
                 assignedMemOnHeap += targetSlot.getAllocatedMemOnHeap();
                 assignedMemOffHeap += targetSlot.getAllocatedMemOffHeap();
                 assignedCpu += targetSlot.getAllocatedCpu();
+                assignedGpu += targetSlot.getAllocatedGpu();
 
                 Double[] worker_resources = {
-                    requestedMemOnHeap, requestedMemOffHeap, requestedCpu,
-                    targetSlot.getAllocatedMemOnHeap(), targetSlot.getAllocatedMemOffHeap(), targetSlot.getAllocatedCpu()};
+                    requestedMemOnHeap, requestedMemOffHeap, requestedCpu, requestedGpu,
+                    targetSlot.getAllocatedMemOnHeap(), targetSlot.getAllocatedMemOffHeap(), targetSlot.getAllocatedCpu(),
+                    targetSlot.getAllocatedGpu()};
                 workerResources.put (targetSlot, worker_resources);
             }
 
-            Double[] resources = {requestedMemOnHeap, requestedMemOffHeap, requestedCpu,
-                    assignedMemOnHeap, assignedMemOffHeap, assignedCpu};
-            LOG.debug("setTopologyResources for {}: requested on-heap mem, off-heap mem, cpu: {} {} {} " +
-                            "assigned on-heap mem, off-heap mem, cpu: {} {} {}",
-                    td.getId(), requestedMemOnHeap, requestedMemOffHeap, requestedCpu,
-                    assignedMemOnHeap, assignedMemOffHeap, assignedCpu);
+            Double[] resources = {requestedMemOnHeap, requestedMemOffHeap, requestedCpu, requestedGpu,
+                    assignedMemOnHeap, assignedMemOffHeap, assignedCpu, assignedGpu};
+            LOG.debug("setTopologyResources for {}: requested on-heap mem, off-heap mem, cpu, gpu: {} {} {} {} " +
+                            "assigned on-heap mem, off-heap mem, cpu, gpu: {} {} {} {} ",
+                    td.getId(), requestedMemOnHeap, requestedMemOffHeap, requestedCpu, requestedGpu,
+                    assignedMemOnHeap, assignedMemOffHeap, assignedCpu, assignedGpu);
             //updating resources used for a topology
             this.schedulingState.cluster.setTopologyResources(td.getId(), resources);
             this.schedulingState.cluster.setWorkerResources(td.getId(), workerResources);
@@ -295,6 +299,7 @@ public class ResourceAwareScheduler implements IScheduler {
         double onHeapMem = 0.0;
         double offHeapMem = 0.0;
         double cpu = 0.0;
+        double gpu = 0.0;
         for (ExecutorDetails exec : executors) {
             Double onHeapMemForExec = td.getOnHeapMemoryRequirement(exec);
             if (onHeapMemForExec != null) {
@@ -308,8 +313,12 @@ public class ResourceAwareScheduler implements IScheduler {
             if (cpuForExec != null) {
                 cpu += cpuForExec;
             }
+            Double gpuForExec = td.getTotalGpuReqTask(exec);
+            if (gpuForExec != null) {
+                gpu += gpuForExec;
+            }
         }
-        return new WorkerSlot(slot.getNodeId(), slot.getPort(), onHeapMem, offHeapMem, cpu);
+        return new WorkerSlot(slot.getNodeId(), slot.getPort(), onHeapMem, offHeapMem, cpu, gpu);
     }
 
     private void updateSupervisorsResources(Cluster cluster, Topologies topologies) {
@@ -319,9 +328,11 @@ public class ResourceAwareScheduler implements IScheduler {
             RAS_Node node = entry.getValue();
             Double totalMem = node.getTotalMemoryResources();
             Double totalCpu = node.getTotalCpuResources();
+            Double totalGpu = node.getTotalGpuResources();
             Double usedMem = totalMem - node.getAvailableMemoryResources();
             Double usedCpu = totalCpu - node.getAvailableCpuResources();
-            Double[] resources = {totalMem, totalCpu, usedMem, usedCpu};
+            Double usedGpu = totalGpu - node.getAvailableGpuResources();
+            Double[] resources = {totalMem, totalCpu, totalGpu, usedMem, usedCpu, usedGpu};
             supervisors_resources.put(entry.getKey(), resources);
         }
         cluster.setSupervisorsResourcesMap(supervisors_resources);

@@ -70,7 +70,8 @@
                                                              (doto (WorkerResources.)
                                                                (.set_mem_on_heap (first resources))
                                                                (.set_mem_off_heap (second resources))
-                                                               (.set_cpu (last resources)))])
+                                                               (.set_cpu (nth resources 2))
+                                                               (.set_gpu (last resources)))])
                                                           (:worker->resources assignment)))))
     thrift-assignment))
 
@@ -106,7 +107,7 @@
   (into {} (map
              (fn [[nodeInfo resources]]
                [(concat [(.get_node nodeInfo)] (.get_port nodeInfo))
-                [(.get_mem_on_heap resources) (.get_mem_off_heap resources) (.get_cpu resources)]])
+                [(.get_mem_on_heap resources) (.get_mem_off_heap resources) (.get_cpu resources) (.get_gpu resources)]])
              worker->resources)))
 
 ;TODO: when translating this function, you should replace the map-val with a proper for loop HERE

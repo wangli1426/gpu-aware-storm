@@ -62,6 +62,15 @@ public class DefaultResourceDeclarer<T extends DefaultResourceDeclarer> implemen
     }
 
     @Override
+    public T setGPULoad(Number amount) {
+        if(amount != null) {
+            amount = amount.doubleValue();
+            resources.put(Config.TOPOLOGY_COMPONENT_CPU_PCORE_PERCENT, amount);
+        }
+        return (T)this;
+    }
+
+    @Override
     public Map<String, Number> getResources() {
         return new HashMap<String, Number>(resources);
     }

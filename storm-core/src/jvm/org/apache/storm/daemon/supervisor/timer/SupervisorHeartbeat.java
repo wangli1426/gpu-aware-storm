@@ -76,6 +76,8 @@ public class SupervisorHeartbeat implements Runnable {
         ret.put(Config.SUPERVISOR_MEMORY_CAPACITY_MB, mem);
         Double cpu = Utils.getDouble(conf.get(Config.SUPERVISOR_CPU_CAPACITY), 400.0);
         ret.put(Config.SUPERVISOR_CPU_CAPACITY, cpu);
+        Double gpu = Utils.getDouble(conf.get(Config.SUPERVISOR_GPU_CAPACITY), 0.0);
+        ret.put(Config.SUPERVISOR_GPU_CAPACITY, gpu);
         return ret;
     }
 

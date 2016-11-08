@@ -63,6 +63,9 @@ public class User {
         if (this.resourcePool.get("memory") == null) {
             this.resourcePool.put("memory", 0.0);
         }
+        if (this.resourcePool.get("gpu") == null) {
+            this.resourcePool.put("gpu", 0.0);
+        }
     }
 
     /**
@@ -257,12 +260,24 @@ public class User {
         return sum;
     }
 
+    public double getGPUResourceUsedByUser() {
+        double sum = 0.0;
+        for (TopologyDetails topo : this.runningQueue) {
+            sum += topo.getTotalRequestedGpu();
+        }
+        return sum;
+    }
+
     public Double getMemoryResourceGuaranteed() {
         return this.resourcePool.get("memory");
     }
 
     public Double getCPUResourceGuaranteed() {
         return this.resourcePool.get("cpu");
+    }
+
+    public Double getGpuResourceGuaranteed() {
+        return this.resourcePool.get("gpu");
     }
 
     public TopologyDetails getNextTopologyToSchedule() {
@@ -312,6 +327,7 @@ public class User {
         ret += "\n - " + " Invalid Queue: " + this.invalidQueue + " size: " + this.invalidQueue.size();
         ret += "\n - " + " CPU Used: " + this.getCPUResourceUsedByUser() + " CPU guaranteed: " + this.getCPUResourceGuaranteed();
         ret += "\n - " + " Memory Used: " + this.getMemoryResourceUsedByUser() + " Memory guaranteed: " + this.getMemoryResourceGuaranteed();
+        ret += "\n - " + " GPU Used: " + this.getGPUResourceUsedByUser() + " GPU guaranteed: " + this.getGpuResourceGuaranteed();
         ret += "\n - " + " % Resource Guarantee Used: \n -- CPU: " + this.getCPUResourcePoolUtilization()
                 + " Memory: " + this.getMemoryResourcePoolUtilization() + " Average: " + this.getResourcePoolAverageUtilization();
         return ret;
