@@ -1590,6 +1590,8 @@
           (do
             (.handleDataPoints consumer-executor (:supervisor-info supervisor-metrics) (:data-points supervisor-metrics))))))))
 
+(defn print-and-forward [p x] (do (log-message p) (log-message x) x))
+
 (defn mk-reified-nimbus [nimbus conf blob-store]
   (let [principal-to-local (AuthUtils/GetPrincipalToLocalPlugin conf)
         admin-users (or (.get conf NIMBUS-ADMINS) [])
@@ -2228,11 +2230,13 @@
           (doseq [[spout-id component-aggregate-stats] (.get_id_to_spout_agg_stats topo-page-info)]
             (let [common-stats (.get_common_stats component-aggregate-stats)
                   resources (ResourceUtils/getSpoutsResources topology topology-conf)]
+              (print-and-forward "Spout resource: " (set-resources-default-if-not-set resources spout-id topology-conf))
               (.set_resources_map common-stats (set-resources-default-if-not-set resources spout-id topology-conf))))
 
           (doseq [[bolt-id component-aggregate-stats] (.get_id_to_bolt_agg_stats topo-page-info)]
             (let [common-stats (.get_common_stats component-aggregate-stats)
                   resources (ResourceUtils/getBoltsResources topology topology-conf)]
+              (print-and-forward "bolt resource: " (set-resources-default-if-not-set resources bolt-id topology-conf))
               (.set_resources_map common-stats (set-resources-default-if-not-set resources bolt-id topology-conf))))
 
           (.set_workers topo-page-info worker-summaries)

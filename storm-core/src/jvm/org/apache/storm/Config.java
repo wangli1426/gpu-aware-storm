@@ -1628,7 +1628,7 @@ public class Config extends HashMap<String, Object> {
      * A default value will be set for this config if user does not override
      */
     @isPositiveNumber(includeZero = true)
-    public static final String TOPOLOGY_COMPONENT_GPU_PERCENT = "topology.component.GPU.percent";
+    public static final String TOPOLOGY_COMPONENT_GPU_PERCENT = "topology.component.gpu.percent";
 
     /**
      * The class name of the {@link org.apache.storm.state.StateProvider} implementation. If not specified

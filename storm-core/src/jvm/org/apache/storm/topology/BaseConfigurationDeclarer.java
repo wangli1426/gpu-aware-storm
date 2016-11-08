@@ -83,7 +83,7 @@ public abstract class BaseConfigurationDeclarer<T extends ComponentConfiguration
     }
 
     @Override
-    public T setGPULoad(Number amount) {
+    public T setGPUSharedLoad(Number amount) {
         if(amount != null) {
             return addConfiguration(Config.TOPOLOGY_COMPONENT_GPU_PERCENT, amount);
         }

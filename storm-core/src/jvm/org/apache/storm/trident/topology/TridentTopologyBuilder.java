@@ -220,7 +220,7 @@ public class TridentTopologyBuilder {
             }
 
             if(gpuLoad != null) {
-                masterCoord.setGPULoad(gpuLoad);
+                masterCoord.setGPUSharedLoad(gpuLoad);
             }
         }
                 

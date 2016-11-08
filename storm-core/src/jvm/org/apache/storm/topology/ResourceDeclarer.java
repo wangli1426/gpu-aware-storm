@@ -25,5 +25,5 @@ public interface ResourceDeclarer <T extends ResourceDeclarer> {
     T setMemoryLoad(Number onHeap);
     T setMemoryLoad(Number onHeap, Number offHeap);
     T setCPULoad(Number amount);
-    T setGPULoad(Number amount);
+    T setGPUSharedLoad(Number amount);
 }

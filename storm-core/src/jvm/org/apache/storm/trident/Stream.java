@@ -150,8 +150,8 @@ public class Stream implements IAggregatableStream, ResourceDeclarer<Stream> {
      * Sets the GPU Load resource for the current operation
      */
     @Override
-    public Stream setGPULoad(Number load) {
-        _node.setGPULoad(load);
+    public Stream setGPUSharedLoad(Number load) {
+        _node.setGPUSharedLoad(load);
         return this;
     }
 

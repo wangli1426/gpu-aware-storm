@@ -46,8 +46,8 @@ public class TridentState implements ResourceDeclarer<TridentState> {
     }
 
     @Override
-    public TridentState setGPULoad(Number load) {
-        _node.setGPULoad(load);
+    public TridentState setGPUSharedLoad(Number load) {
+        _node.setGPUSharedLoad(load);
         return this;
     }
 
