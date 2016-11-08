@@ -72,7 +72,7 @@ public class ResourceAwareExampleTopology {
 
     BoltDeclarer bolt2 = builder.setBolt("exclaim2", new ExclamationBolt(), 1).shuffleGrouping("exclaim1");
     bolt2.setMemoryLoad(100);
-    bolt2.setGPUSharedLoad(80);
+    bolt2.setGPULoad(80);
 
     Config conf = new Config();
     conf.setDebug(true);

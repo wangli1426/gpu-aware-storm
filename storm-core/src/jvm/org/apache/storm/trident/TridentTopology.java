@@ -490,7 +490,7 @@ public class TridentTopology {
             }
 
             if(gpuLoad != null) {
-                spoutDeclarer.setGPUSharedLoad(gpuLoad);
+                spoutDeclarer.setGPULoad(gpuLoad);
             }
         }
 
@@ -522,7 +522,7 @@ public class TridentTopology {
                 }
 
                 if(gpuLoad != null) {
-                    d.setGPUSharedLoad(gpuLoad);
+                    d.setGPULoad(gpuLoad);
                 }
 
                 Collection<PartitionNode> inputs = uniquedSubscriptions(externalGroupInputs(g));

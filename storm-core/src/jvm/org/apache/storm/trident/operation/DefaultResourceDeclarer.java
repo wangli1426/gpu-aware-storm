@@ -62,7 +62,7 @@ public class DefaultResourceDeclarer<T extends DefaultResourceDeclarer> implemen
     }
 
     @Override
-    public T setGPUSharedLoad(Number amount) {
+    public T setGPULoad(Number amount) {
         if(amount != null) {
             amount = amount.doubleValue();
             resources.put(Config.TOPOLOGY_COMPONENT_CPU_PCORE_PERCENT, amount);
