@@ -77,12 +77,12 @@ public class GPUResourceAwareExampleTopology {
     SpoutDeclarer spout =  builder.setSpout("word", new TestWordSpout(), 5);
 
     BoltDeclarer bolt1 = builder.setBolt("exclaim1", new ExclamationBolt(), 3).shuffleGrouping("word");
-    // The instance of this bolt must be run on the node with gpu. This configure allows up to three instances of this
+    // An instance of this bolt must be run on the node with gpu. This configure allows up to three instances of this
     // bolt to share the same gpu.
-    bolt1.setGPULoad(30.0);
+    bolt1.setGPULoad(30);
 
     BoltDeclarer bolt2 = builder.setBolt("exclaim2", new ExclamationBolt(), 1).shuffleGrouping("exclaim1");
-    // The instance of this bolt uses gpu exclusively.
+    // An instance of this bolt uses gpu exclusively.
     bolt2.setGPULoad(100);
 
     Config conf = new Config();
